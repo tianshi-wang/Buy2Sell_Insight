@@ -1,7 +1,7 @@
 import os
 import sys
 import pandas as pd
-from connDB import connDB
+from connLocalDB import connDB
 import numpy as np
 import pystan
 import matplotlib.pyplot as plt

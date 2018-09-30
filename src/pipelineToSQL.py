@@ -1,12 +1,10 @@
 import connMongo
 import pymongo
-import matplotlib.pyplot as plt
-import pandas as pd
-from sqlalchemy import create_engine
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 import pandas as pd
 import datetime as dt
+import sys
 
 def createDB():
     # Define a database name (we're using a dataset on births, so we'll call it birth_db)
@@ -190,16 +188,12 @@ def downloadSellers(domainDB,engine):
 
 
 def main():
-    categoryDB, domainDB = connMongo.conn()
+    categoryDB, domainDB = connMongo.conn(sys.argv[1], sys.argv[2]) #pw_for_InvDB, pw_for_DomainDB
     engine = createDB()
     downloadWishList(domainDB,engine)
     # downloadOrder(domainDB,engine)
     # downloadUsers(domainDB, engine)
     # downloadItems(categoryDB, engine)
-
-
-
-
 
 
 if __name__ == "__main__":

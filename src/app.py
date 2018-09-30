@@ -450,9 +450,9 @@ app.layout = html.Div(
 )
 def update_output_div(input_value):
     if input_value=="Input User ID":
-        return generate_table(pd.read_csv('./data/userTable.csv'))
+        return generate_table(pd.read_csv('../data/userTable.csv'))
     else:
-        df = pd.read_csv('./data/userTable.csv')
+        df = pd.read_csv('../data/userTable.csv')
         df = df[df['userID']==int(input_value)]
         return generate_table(df)
 

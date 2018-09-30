@@ -4,7 +4,7 @@ from imblearn.over_sampling import SMOTE
 import pandas as pd
 import sklearn
 import numpy as np
-from connDB import connDB
+from connLocalDB import connDB
 from sklearn.metrics import fbeta_score, make_scorer
 
 

@@ -6,7 +6,7 @@ Query real-time SQL data, and store dashboard-related data to refresh-updated SQ
 import pandas as pd
 import sklearn
 import numpy as np
-from connDB import connDB
+from connLocalDB import connDB
 
 
 

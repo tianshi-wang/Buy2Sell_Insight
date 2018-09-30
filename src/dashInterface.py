@@ -12,7 +12,7 @@ import psycopg2
 import pandas as pd
 import sklearn
 import numpy as np
-from connDB import connAWS
+from connLocalDB import connAWS
 
 
 def summary():
