@@ -9,23 +9,27 @@ Local DB name: insightProj
 AWS Instance Name: insightdb, AWS DB name: birth_db
 """
 
+
+def connAWS():
+    dbname = 'birth_db'  # DB name not table
+    username = 'Vera'  # change this to your username
+    passwd = sys.argv[1]
+    print(passwd)
+    hostAddr = 'insightdb.c4f4cvkgxat9.us-east-2.rds.amazonaws.com:5432'
+    awsEngine = create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (username, passwd, hostAddr, dbname))
+    if not database_exists(awsEngine.url):
+        create_database(awsEngine.url)
+    return awsEngine
+
+
 class LocalToAWS():
     def __init__(self):
         self.df=None
         self.dfList=None
         self.tableName=None
-        self.pw=sys.argv[1]
 
     def connAWS(self):
-        dbname = 'birth_db'   #DB name not table
-        username = 'Vera'  # change this to your username
-        passwd = self.pw
-        print(passwd)
-        hostAddr = 'insightdb.c4f4cvkgxat9.us-east-2.rds.amazonaws.com:5432'
-        self.awsEngine = create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (username,passwd,hostAddr, dbname))
-        print(self.awsEngine.url)
-        if not database_exists(self.awsEngine.url):
-            create_database(self.awsEngine.url)
+        self.awsEngine = connAWS()
 
     def connLocalDB(self):
         dbname = 'insightProj'

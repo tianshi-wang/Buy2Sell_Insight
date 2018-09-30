@@ -12,14 +12,14 @@ import psycopg2
 import pandas as pd
 import sklearn
 import numpy as np
-from connLocalDB import connAWS
+from syncAwsRDS import connAWS
 
 
 def summary():
     """
     :return: format as "userId, moduleName, year, month, count"
     """
-    _, engine = connAWS()
+    engine = connAWS()
     sql_query = """
     SELECT * FROM summary ;
     """
