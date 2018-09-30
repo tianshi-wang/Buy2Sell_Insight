@@ -30,7 +30,7 @@ def collectionGroupbyModule():
     """
     :return: format as "userId, moduleName, year, month, count"
     """
-    _, engine = connAWS()
+    engine = connAWS()
     sql_query = """
     SELECT * FROM collectiongroupbymodule Limit 5    ;
     """
@@ -50,7 +50,7 @@ def ordersGroupbyCategory():
     """
     :return: format as "userId, moduleName, year, month, count"
     """
-    _, engine = connAWS()
+    engine = connAWS()
     sql_query = """
     SELECT * FROM ordersgroupbycategory Limit 5    ;
     """
@@ -61,7 +61,7 @@ def users():
     """
     :return: format as "userId, moduleName, year, month, count"
     """
-    _, engine = connAWS()
+    engine = connAWS()
     sql_query = """
     SELECT * FROM users     ;
     """
@@ -70,7 +70,7 @@ def users():
     return df
 
 def collectionGroupby():
-    _, engine = connAWS()
+    engine = connAWS()
     """
     Read collections table and write new table collectiongroupby
     :return: format as "userId, moduleName, year, month, count"
