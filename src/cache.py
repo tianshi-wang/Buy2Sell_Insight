@@ -4,12 +4,28 @@ Query real-time SQL data, and store dashboard-related data to refresh-updated SQ
 """
 
 import pandas as pd
-import sklearn
 import numpy as np
 from connLocalDB import connDB
+from datetime import datetime, timedelta
 
-
-
+def groupby_pivot(df,rowIdx, colIdx, val):
+    """
+    Process a dateframe like:
+    user Month Item
+    John Dec   item1
+    John Dec   item2
+    Andy Jan   item2
+    To a DF like:
+    user Jan ... Dec
+    john  0  ... 2
+    Andy  1  ... 0
+    Params: row index (rowIdx), columns (colIdx), value is count(val) for a given rowIdx and colIdx
+    """
+    df_series = df.groupby([rowIdx,colIdx])[val].count()
+    df_groupby = df_series.to_frame()
+    df_groupby.reset_index(inplace=True)
+    df_groupby_pivoted = df_groupby.pivot(index=rowIdx, columns=colIdx, values=val).fillna(value=0)
+    return df_groupby_pivoted
 
 def userClean():
     engine, conn = connDB()
@@ -76,7 +92,27 @@ def writeSummary():
                                          'NumberOfSellers':df_seller, }, orient='index',columns=monthList)
     df_summary.to_sql('summary', engine, if_exists='replace')
 
+def writeCollectionByUser():
+    engine, conn = connDB()
+    sql_query = """
+      SELECT collections."userId", collections.module, collections."itemId", items."CategoryName"
+      FROM collections
+      JOIN items ON collections."itemId" = items."itemId"
+      WHERE collections.created_date > '%s'::date
+      """ % str(datetime.now().date()-timedelta(days=90))
+    df_users = pd.read_sql_query(sql_query, conn)
 
+    user_module = groupby_pivot(df_users, rowIdx='userId', colIdx='module', val='itemId')
+    user_category = groupby_pivot(df_users, rowIdx='userId', colIdx='CategoryName', val='itemId')
+
+
+
+    user_module['ratio'] = user_module.max(axis=1)/user_module.sum(axis=1)
+    user_category['ratio'] = user_category.max(axis=1)/user_category.sum(axis=1)
+
+
+    user_module.to_sql('collectiongroupbyuserandmodule', engine, if_exists='replace', index=False)
+    user_category.to_sql('collectiongroupbyuserandcategory', engine, if_exists='replace', index=False)
 
 
 def writeWishlistGroupby():
@@ -230,7 +266,7 @@ def writeFeatures():
         ;
     """
     df_features = pd.read_sql_query(feature_query, conn)
-    df_features['month'] = df_features['sellercreateddate'].apply(lambda x:  (x.year-2017)*12+x.month).fillna(value=0)
+    df_features['month'] = df_features['sellercreateddate'].apply(lambda x: (x.year-2017)*12+x.month).fillna(value=0)
     df_features['month'] = df_features['month'].apply(lambda x: int(x))
     df_features = df_features.drop(['userId','sellercreateddate'],axis=1)
     df_features = df_features.fillna(value=0)
@@ -298,7 +334,8 @@ def main():
     # dataIngestion module read the cache SQL and return DF for plot in Dashboard.
     # writeOrderGroupby()
     # writeCollectionGroupbyUserAndModule()
-    writeSummary()
+    writeCollectionByUser()
+    # writeSummary()
     # writeWishlistGroupby()
     # writeFeatures()
     # writeCollectionGroupbyModule()

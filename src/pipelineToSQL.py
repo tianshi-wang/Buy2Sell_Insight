@@ -107,15 +107,15 @@ def downloadItems(categoryDB,engine):
     for doc in db.find({}, { \
         "_id": "$_id",
         "Name": "$Name",
-        "ModuleName": "$ModuleName",
-        "CategoryName": "$CategoryName"
+        "SeoFriendlyModuleName": "$SeoFriendlyModuleName",
+        "SeoFriendlyCategoryName": "$SeoFriendlyCategoryName"
             }).sort([('_id',pymongo.DESCENDING)]):
         idx+=1
         if idx%1000==0:
             print(idx)
         try:
             newRowDF = pd.DataFrame([[ \
-                doc['_id'],doc['Name'],doc['ModuleName'], doc['CategoryName']\
+                doc['_id'],doc['Name'],doc['SeoFriendlyModuleName'], doc['SeoFriendlyCategoryName']\
                 ]], columns=['itemId','name', 'ModuleName', 'CategoryName']\
                 )
             df = df.append(newRowDF, ignore_index=True)
@@ -190,10 +190,10 @@ def downloadSellers(domainDB,engine):
 def main():
     categoryDB, domainDB = connMongo.conn(sys.argv[1], sys.argv[2]) #pw_for_InvDB, pw_for_DomainDB
     engine = createDB()
-    downloadWishList(domainDB,engine)
+    # downloadWishList(domainDB,engine)
     # downloadOrder(domainDB,engine)
     # downloadUsers(domainDB, engine)
-    # downloadItems(categoryDB, engine)
+    downloadItems(categoryDB, engine)
 
 
 if __name__ == "__main__":

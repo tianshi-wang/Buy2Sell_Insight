@@ -1,16 +1,4 @@
-import connMongo
-import pymongo
 import pandas as pd
-from sqlalchemy import create_engine
-from bson.son import SON
-import matplotlib.pyplot as plt
-from sklearn.model_selection import GridSearchCV
-from sklearn.ensemble import RandomForestClassifier
-from sqlalchemy import create_engine
-from sqlalchemy_utils import database_exists, create_database
-import psycopg2
-import pandas as pd
-import sklearn
 import numpy as np
 from syncAwsRDS import connAWS
 
