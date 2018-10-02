@@ -131,43 +131,39 @@ app.layout = html.Div(
                 html.H2(''),
                 html.H2(
                     'Inventory health report',
-                    className='eight columns',
+                    className='twelve columns',
+                    style={'textAlign': 'center',}
                 ),
             ],
-            className='row'
         ),
         html.Div(
             [
-                html.Div(
-                    [
-                        html.P('Filter by categories:'),
-                        dcc.RadioItems(
-                            id='category_name_selector',
-                            options=[
-                                {'label': 'All ', 'value': 'all'},
-                                {'label': 'LowInventory(top3)', 'value': 'LowInventory(top3)'},
-                                {'label': 'Customize ', 'value': 'custom'}
-                            ],
-                            value='active',
-                            labelStyle={'display': 'inline-block'}
-                        ),
-                        dcc.Dropdown(
-                            id='category_name_dropdown',
-                            options=category_name_options,
-                            multi=True,
-                            value=[]
-                        ),
-                        # dcc.Checklist(
-                        #     id='lock_selector',
-                        #     options=category_name_options,
-                        #     values=[],
-                        # )
+                html.P('Filter by categories:'),
+                dcc.RadioItems(
+                    id='category_name_selector',
+                    options=[
+                        {'label': 'All ', 'value': 'all'},
+                        {'label': 'LowInventory(top3)', 'value': 'LowInventory(top3)'},
+                        {'label': 'Customize ', 'value': 'custom'}
                     ],
-                    className='six columns'
+                    value='active',
+                    labelStyle={'display': 'inline-block'}
                 ),
+                dcc.Dropdown(
+                    id='category_name_dropdown',
+                    options=category_name_options,
+                    multi=True,
+                    value=[]
+                ),
+                # dcc.Checklist(
+                #     id='lock_selector',
+                #     options=category_name_options,
+                #     values=[],
+                # )
             ],
-            className='row'
+            className='twelve columns'
         ),
+
 
         # Fig.1 and Fig. 2
         html.Div(
@@ -193,7 +189,8 @@ app.layout = html.Div(
                 html.H2(''),
                 html.H2(
                     '\nHigh-impact sellers recommendation\n',
-                    className='eight columns',
+                    style={'text-align': 'center'},
+                    className='twelve columns',
                 ),
             ],
             className='row'
@@ -214,6 +211,7 @@ app.layout = html.Div(
                 html.H2(
                     'Business Overview ',
                     className='eight columns',
+                    style={'text-align': 'center'},
                 ),
             ],
             className='row'
