@@ -88,16 +88,16 @@ app.layout = html.Div(
                     'Admin Dashboard',
                     className='eight columns',
                 ),
-                # html.Img(
-                #     src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe.png",
-                #     className='one columns',
-                #     style={
-                #         'height': '100',
-                #         'width': '225',
-                #         'float': 'right',
-                #         'position': 'relative',
-                #     },
-                # ),
+                html.Img(
+                    src="https://www.covetly.com/Content/images/covetly-logo-trans-with-slight-space-top-and-bottom.png",
+                    className='one columns',
+                    style={
+                        'height': '100',
+                        'width': '225',
+                        'float': 'right',
+                        'position': 'relative',
+                    },
+                ),
             ],
             className='row'
         ),
@@ -140,6 +140,16 @@ app.layout = html.Div(
         # ),
 
         # left selection area including radio item, dropdown, and click box.
+        html.Div(
+            [
+                html.H2(''),
+                html.H2(
+                    'Inventory health report',
+                    className='eight columns',
+                ),
+            ],
+            className='row'
+        ),
         html.Div(
             [
                 html.Div(
@@ -216,7 +226,7 @@ app.layout = html.Div(
             [
                 html.H2(''),
                 html.H2(
-                    'Overview ',
+                    'Business Overview ',
                     className='eight columns',
                 ),
             ],
