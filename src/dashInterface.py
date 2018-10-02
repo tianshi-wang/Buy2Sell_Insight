@@ -14,6 +14,7 @@ def summary():
     df = pd.read_sql_query(sql_query, engine)
     return df.iloc[:,:-1]
 
+
 def collectionGroupbyModule():
     """
     :return: format as "userId, moduleName, year, month, count"
@@ -26,7 +27,7 @@ def collectionGroupbyModule():
     return df
 
 def wishlistGroupbyModule():
-    _, engine = connAWS()
+    engine = connAWS()
     sql_query = """
     SELECT * FROM wishlistgroupbycategory Limit 5    ;
     """

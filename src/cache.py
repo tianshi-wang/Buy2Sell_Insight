@@ -105,11 +105,8 @@ def writeCollectionByUser():
     user_module = groupby_pivot(df_users, rowIdx='userId', colIdx='module', val='itemId')
     user_category = groupby_pivot(df_users, rowIdx='userId', colIdx='CategoryName', val='itemId')
 
-
-
     user_module['ratio'] = user_module.max(axis=1)/user_module.sum(axis=1)
     user_category['ratio'] = user_category.max(axis=1)/user_category.sum(axis=1)
-
 
     user_module.to_sql('collectiongroupbyuserandmodule', engine, if_exists='replace', index=False)
     user_category.to_sql('collectiongroupbyuserandcategory', engine, if_exists='replace', index=False)

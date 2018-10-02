@@ -13,7 +13,7 @@ AWS Instance Name: insightdb, AWS DB name: birth_db
 def connAWS():
     dbname = 'birth_db'  # DB name not table
     username = 'Vera'  # change this to your username
-    passwd = sys.argv[1]
+    passwd = '111111aa'
     hostAddr = 'insightdb.c4f4cvkgxat9.us-east-2.rds.amazonaws.com:5432'
     awsEngine = create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (username, passwd, hostAddr, dbname))
     if not database_exists(awsEngine.url):

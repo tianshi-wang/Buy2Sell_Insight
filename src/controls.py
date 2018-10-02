@@ -67,30 +67,16 @@ COUNTIES = {
     '123': 'Yates'
  }
 
-WELL_STATUSES = dict(
-    AC = 'Active',
-    AR = 'Application Received to Drill/Plug/Convert',
-    CA = 'Cancelled',
-    DC = 'Drilling Completed',
-    DD = 'Drilled Deeper',
-    DG = 'Drilling in Progress',
-    EX = 'Expired Permit',
-    IN = 'Inactive',
-    NR = 'Not Reported on AWR',
-    PA = 'Plugged and Abandoned',
-    PI = 'Permit Issued',
-    PB = 'Plugged Back',
-    PM = 'Plugged Back Multilateral',
-    RE = 'Refunded Fee',
-    RW = 'Released - Water Well',
-    SI = 'Shut-In',
-    TA = 'Temporarily Abandoned',
-    TR = 'Transferred Permit',
-    UN = 'Unknown',
-    UL = 'Unknown Located',
-    UM = 'Unknown Not Found',
-    VP = 'Voided Permit',
-)
+CATEGORY_NAME = {'Amiibo': 'amiibo', 'AmiiboCards': 'amiibo-cards', 'Berbrick': 'berbrick', 'Covetly': 'covetly-store', \
+                 'DcC': 'dc-comics', 'DisneyI': 'disney-infinity-figures', 'Dorbz': 'dorbz', 'Funko':'funko', \
+                 'FunkoO': 'funko-other', 'Garbage': 'garbage-pail-kids', 'GiJoe': 'gi-joe', 'Hikari': 'hikari', \
+                 'Kaws': 'kaws', 'KidRobot': 'kid-robot', 'KidRobotB': 'kid-robot-blind-boxes', 'MarvelC': 'marvel-comics',\
+                 'MastersU': 'masters-of-the-universe', 'MightyJ': 'mighty-jaxx', 'MyLittlePony': 'my-little-pony',\
+                 'MysteryM': 'mystery-minis', 'Pokemon': 'pokemon-cards', 'PrintHeroes': 'pint-sized-heroes', \
+                 'RockC': 'rock-candy', 'Sideshow': 'sideshow-collectibles', 'Skylanders': 'skylanders', \
+                 'StarWar': 'star-wars-kenner', 'Superplastic': 'superplastic', 'Tokidoki': 'tokidoki', \
+                 'Transformers': 'transformers', 'Vynl': 'vynl'}
+
 
 WELL_TYPES = dict(
      BR = 'Brine',
@@ -117,6 +103,10 @@ WELL_TYPES = dict(
      TH = 'Geothermal',
      UN = 'Unknown',
 )
+
+CATEGORY_COLORS = ['#FFEDA0', '#FA9FB5','#A1D99B','#67BD65','#BFD3E6','#B3DE69','#FDBF6F','#FC9272',\
+    '#D0D1E6','#ABD9E9','#3690C0','#F87A72','#CA6BCC','#DD3497','#4EB3D3','#FFFF33','#FB9A99','#A6D853','#D4B9DA',\
+    '#AEB0B8','#CCCCCC','#EAE5D9','#C29A84','#FA9FB5','#A1D99B','#67BD65','#BFD3E6','#B3DE69','#FDBF6F','#FC9272']
 
 WELL_COLORS = dict(
      GD = '#FFEDA0',

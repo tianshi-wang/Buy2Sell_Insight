@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3853006-678c-4bff-a9be-a2885bb682bc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../data/userTable.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../data/userTable.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/cache.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controls.py" beforeDir="false" afterPath="$PROJECT_DIR$/controls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dashInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/dashInterface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pipelineToSQL.py" beforeDir="false" afterPath="$PROJECT_DIR$/pipelineToSQL.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/syncAwsRDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/syncAwsRDS.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,7 +16,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/src$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1538408528565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/src$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1538483234921" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FUSProjectUsageTrigger">
     <session id="810444707">
@@ -28,25 +30,25 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="21" />
+          <entry key="py" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="21" />
+          <entry key="Python" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="206" />
           <entry key="dummy" value="5" />
-          <entry key="py" value="1243" />
+          <entry key="py" value="2773" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="5" />
-          <entry key="Python" value="1447" />
+          <entry key="Python" value="2977" />
           <entry key="SQL" value="2" />
         </counts>
       </usages-collector>
@@ -66,11 +68,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-736">
-              <caret line="33" column="14" selection-start-line="33" selection-end-line="33" selection-end-column="14" />
+            <state relative-caret-position="413">
+              <caret line="315" column="52" lean-forward="true" selection-start-line="315" selection-start-column="52" selection-end-line="315" selection-end-column="52" />
               <folding>
                 <element signature="e#36#45#0" expanded="true" />
               </folding>
@@ -81,10 +83,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dashInterface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="33">
-              <caret line="53" column="29" lean-forward="true" selection-start-line="53" selection-start-column="29" selection-end-line="53" selection-end-column="29" />
+            <state relative-caret-position="240">
+              <caret line="16" selection-start-line="16" selection-end-line="16" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
+                <marker date="1538489898850" expanded="true" signature="319:320" ph="..." />
               </folding>
             </state>
           </provider>
@@ -92,13 +95,26 @@
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/controls.py">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="189">
+              <caret line="108" column="113" lean-forward="true" selection-start-line="108" selection-start-column="113" selection-end-line="108" selection-end-column="113" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/connLocalDB.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
+            <state relative-caret-position="318">
               <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
               <folding>
                 <element signature="e#1#37#0" expanded="true" />
@@ -110,21 +126,21 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/syncAwsRDS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+            <state relative-caret-position="225">
+              <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
-                <marker date="1538351213226" expanded="true" signature="852:893" ph="..." />
+                <marker date="1538481258072" expanded="true" signature="851:892" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cache.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="202">
-              <caret line="110" column="17" selection-start-line="110" selection-start-column="4" selection-end-line="110" selection-end-column="17" />
+            <state relative-caret-position="142">
+              <caret line="105" column="84" selection-start-line="105" selection-start-column="84" selection-end-line="105" selection-end-column="84" />
               <folding>
                 <element signature="e#192#211#0" expanded="true" />
               </folding>
@@ -152,10 +168,22 @@
       <find>data/</find>
       <find>connMongo</find>
       <find>connAWS</find>
-      <find>control</find>
       <find>ordersGroupbyCategory</find>
       <find>gg</find>
+      <find>control</find>
+      <find>Development</find>
+      <find>WELL_STATUSES</find>
+      <find>@app.callback(Output('well_types', 'value'),</find>
+      <find>category_name_dropdow</find>
+      <find>well_status_selector</find>
+      <find>wishlistGroupbyModule</find>
+      <find>df</find>
+      <find>category_inventory_graph_layout</find>
     </findStrings>
+    <replaceStrings>
+      <replace>CATEGORY_NAME</replace>
+      <replace>category_name_options</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -163,14 +191,15 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/connMongo.py" />
         <option value="$PROJECT_DIR$/connDB.py" />
         <option value="$PROJECT_DIR$/connLocalDB.py" />
-        <option value="$PROJECT_DIR$/dashInterface.py" />
-        <option value="$PROJECT_DIR$/syncAwsRDS.py" />
         <option value="$PROJECT_DIR$/pipelineToSQL.py" />
         <option value="$PROJECT_DIR$/cache.py" />
+        <option value="$PROJECT_DIR$/syncAwsRDS.py" />
+        <option value="$PROJECT_DIR$/dashInterface.py" />
+        <option value="$PROJECT_DIR$/controls.py" />
+        <option value="$PROJECT_DIR$/app.py" />
       </list>
     </option>
   </component>
@@ -181,8 +210,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="20" />
-    <option name="y" value="23" />
+    <option name="x" value="23" />
+    <option name="y" value="44" />
     <option name="width" value="1260" />
     <option name="height" value="777" />
   </component>
@@ -250,7 +279,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cache.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/controls.py" />
       <option name="PARAMETERS" value="insightds:pZCI6IjA4ZTEzMDVhODMzZTM3MGNhNjVjY  insightds:REUwEAVrZzsk2qODxOYeXAqCkUSJfgZJHu" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -274,7 +303,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="20" y="23" width="1260" height="777" extended-state="0" />
+    <frame x="61" y="110" width="1260" height="777" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2536946" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -282,7 +312,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.329927" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.40437958" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.36934307" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -290,8 +320,8 @@
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32905984" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32905984" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32846716" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32846716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -305,35 +335,11 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/cache.py</url>
-          <line>113</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/controls.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/envs/insight/lib/python3.6/site-packages/psycopg2/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="960">
           <caret line="129" selection-start-line="129" selection-end-line="129" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-736">
-          <caret line="33" column="14" selection-start-line="33" selection-end-line="33" selection-end-column="14" />
-          <folding>
-            <element signature="e#36#45#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -365,31 +371,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dashInterface.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="33">
-          <caret line="53" column="29" lean-forward="true" selection-start-line="53" selection-start-column="29" selection-end-line="53" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
           <caret line="1663" selection-start-line="1663" selection-end-line="1663" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/syncAwsRDS.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-            <marker date="1538351213226" expanded="true" signature="852:893" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -399,16 +384,6 @@
           <caret line="109" column="54" lean-forward="true" selection-start-line="109" selection-start-column="54" selection-end-line="109" selection-end-column="54" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/connLocalDB.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
-          <folding>
-            <element signature="e#1#37#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -425,10 +400,66 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cache.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="110" column="17" selection-start-line="110" selection-start-column="4" selection-end-line="110" selection-end-column="17" />
+        <state relative-caret-position="142">
+          <caret line="105" column="84" selection-start-line="105" selection-start-column="84" selection-end-line="105" selection-end-column="84" />
           <folding>
             <element signature="e#192#211#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/connLocalDB.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+          <folding>
+            <element signature="e#1#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/syncAwsRDS.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+            <marker date="1538481258072" expanded="true" signature="851:892" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dashInterface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+            <marker date="1538489898850" expanded="true" signature="319:320" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="108" column="113" lean-forward="true" selection-start-line="108" selection-start-column="113" selection-end-line="108" selection-end-column="113" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="413">
+          <caret line="315" column="52" lean-forward="true" selection-start-line="315" selection-start-column="52" selection-end-line="315" selection-end-column="52" />
+          <folding>
+            <element signature="e#36#45#0" expanded="true" />
           </folding>
         </state>
       </provider>
