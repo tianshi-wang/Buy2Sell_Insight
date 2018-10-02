@@ -85,14 +85,14 @@ app.layout = html.Div(
         html.Div(
             [
                 html.H1(
-                    'Admin Dashboard',
+                    'Admin Dashboard \n',
                     className='eight columns',
                 ),
                 html.Img(
                     src="https://www.covetly.com/Content/images/covetly-logo-trans-with-slight-space-top-and-bottom.png",
                     className='one columns',
                     style={
-                        'height': '100',
+                        'height': '80',
                         'width': '225',
                         'float': 'right',
                         'position': 'relative',
@@ -125,21 +125,7 @@ app.layout = html.Div(
             className='row'
         ),
 
-        # Text
-        # html.Div(
-        #     [
-        #         html.P('Filter by construction date (or select range in histogram):'),  # noqa: E501
-        #         dcc.RangeSlider(
-        #             id='year_slider',
-        #             min=1960,
-        #             max=2017,
-        #             value=[1990, 2010]
-        #         ),
-        #     ],
-        #     style={'margin-top': '20'}
-        # ),
 
-        # left selection area including radio item, dropdown, and click box.
         html.Div(
             [
                 html.H2(''),
@@ -191,14 +177,14 @@ app.layout = html.Div(
                         dcc.Graph(id="category_inventory_graph")
                     ],
                     className='eight columns',
-                    style={'margin-top': '10'}
+                    style={'margin-top': '20', 'marginBottom': 40}
                 ),
                 html.Div(
                     [
                         dcc.Graph(id='subcategory_inventory_graph')
                     ],
                     className='four columns',
-                    style={'margin-top': '10'}
+                    style={'margin-top': '20', 'marginBottom': 40}
                 ),
             ],
         ),
@@ -206,7 +192,7 @@ app.layout = html.Div(
             [
                 html.H2(''),
                 html.H2(
-                    'High-impact sellers recommendation',
+                    '\nHigh-impact sellers recommendation\n',
                     className='eight columns',
                 ),
             ],
@@ -241,14 +227,14 @@ app.layout = html.Div(
                         dcc.Graph(id="summary_graph")
                     ],
                     className='eight columns',
-                    style={'margin-top': '10'}
+                    style={'margin-top': '20', 'marginBottom': 40}
                 ),
                 html.Div(
                     [
                         dcc.Graph(id='byCategory_graph')
                     ],
                     className='four columns',
-                    style={'margin-top': '10'}
+                    style={'margin-top': '20', 'marginBottom': 40}
                 ),
             ],
         ),
@@ -272,15 +258,13 @@ app.layout = html.Div(
                         dcc.Graph(id='user_seller_graph')
                     ],
                     className='twelve columns',
-                    style={'margin-top': '20'}
+                    style={'margin-top': '20', 'marginBottom': 40}
                 ),
             ]),
     ],
     #app.layout([divs], className='xxx')
     className='ten columns offset-by-one'
 )
-
-
 
 
 
