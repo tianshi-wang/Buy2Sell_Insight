@@ -3,6 +3,7 @@
 import os
 import copy
 import datetime as dt
+import flask
 
 import pandas as pd
 from flask_cors import CORS
@@ -20,13 +21,13 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
 app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-stylesheets/2d266c578d2a6e8850ebce48fdb52759b2aef506/stylesheet-oil-and-gas.css'})  # noqa: E501
 server = app.server
+app.title = 'Dashboard Demo'
 CORS(server)
 
 if 'DYNO' in os.environ:
     app.scripts.append_script({
         'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'  # noqa: E501
     })
-
 
 # Create controls
 
@@ -37,7 +38,6 @@ category_name_options = [{'label': str(CATEGORY_NAME[category_name]),
 
 
 # Create global chart template
-mapbox_access_token = 'pk.eyJ1IjoiamFja2x1byIsImEiOiJjajNlcnh3MzEwMHZtMzNueGw3NWw5ZXF5In0.fk8k06T96Ml9CLGgKmk81w'  # noqa: E501
 
 layout = dict(
     autosize=True,
@@ -54,16 +54,6 @@ layout = dict(
     plot_bgcolor="#191A1A",
     paper_bgcolor="#020202",
     legend=dict(font=dict(size=10), orientation='h'),
-    title='Satellite Overview',
-    mapbox=dict(
-        accesstoken=mapbox_access_token,
-        style="dark",
-        center=dict(
-            lon=-78.05,
-            lat=42.54
-        ),
-        zoom=7,
-    )
 )
 
 
@@ -82,6 +72,7 @@ def generate_table(dataframe, max_rows=6):
 # Create app layout
 app.layout = html.Div(
     [   #Top text and logo
+        html.Link(rel="shortcut icon", href="favicon.ico"),
         html.Div(
             [
                 html.H1(
@@ -260,25 +251,11 @@ app.layout = html.Div(
                 ),
             ]),
     ],
-    #app.layout([divs], className='xxx')
     className='ten columns offset-by-one'
 )
 
 
 
-# In[]:
-# Create callbacks
-
-# Radio -> multi
-# @app.callback(Output('CATEGORY_NAME', 'value'),        #CATEGORY_NAME='AC' if selector == 'active'
-#               [Input('well_status_selector', 'value')])
-# def display_status(selector):
-#     if selector == 'all':
-#         return list(CATEGORY_NAME.keys())    #all wells list
-#     elif selector == 'active':
-#         return ['AC']
-#     else:   #active only
-#         return []
 
 # area
 # Radio -> multi
@@ -294,18 +271,13 @@ def display_type(selector):
         return ['Funko', 'Amiibo', 'DisneyI']
 
 
+@app.server.route('/favicon.ico')
+def favicon():
+    print(app.server.root_path)
+    return flask.send_from_directory(os.path.join(app.server.root_path, 'static'),'favicon.ico', \
+                                     '/favicon.icon')
 
-#Figure 1##############################################################
 
-# # Selectors -> main graph
-# @app.callback(Output('main_graph', 'figure'),
-#               [Input('CATEGORY_NAME', 'value'),
-#                Input('well_types', 'value'),
-#                Input('year_slider', 'value')],
-#               [State('lock_selector', 'values'),
-#                State('main_graph', 'relayoutData')])
-# def make_main_figure(CATEGORY_NAME, well_types, year_slider,
-#                      selector, main_graph_layout):
 
 @app.callback(
     Output(component_id='userId-div', component_property='children'),
@@ -328,8 +300,6 @@ def update_output_div(input_value, category_name_dropdown):
         df = df[df['userID']==int(input_value)]
         return generate_table(df)
 
-
-#'The information of user "{}" is shown below'.format(input_value)
 
 
 ###############################
@@ -729,5 +699,4 @@ def make_user_seller_graph(summary_graph_hover):
 # In[]:
 # Main
 if __name__ == '__main__':
-
     app.server.run(host= '0.0.0.0',debug=True, threaded=True)
