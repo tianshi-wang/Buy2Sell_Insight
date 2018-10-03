@@ -3,10 +3,11 @@
 import os
 import copy
 import datetime as dt
-import flask
+# import flask
 
 import pandas as pd
 from flask_cors import CORS
+from flask import send_from_directory, Flask
 import dash
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
@@ -15,19 +16,39 @@ import dashInterface
 from controls import CATEGORY_NAME, CATEGORY_COLORS
 
 
-# Multi-dropdown options
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
-app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-stylesheets/2d266c578d2a6e8850ebce48fdb52759b2aef506/stylesheet-oil-and-gas.css'})  # noqa: E501
+app = dash.Dash(__name__)
 server = app.server
+
+app.css.append_css({
+    'external_url': (
+        'https://cdn.rawgit.com/chriddyp/0247653a7c52feb4c48437e1c1837f75'
+        '/raw/a68333b876edaf62df2efa7bac0e9b3613258851/dash.css'
+    )
+})
+
+external_js = ["https://code.jquery.com/jquery-3.2.1.min.js",
+               "https://codepen.io/bcd/pen/YaXojL.js"]
+
+for js in external_js:
+    app.scripts.append_script({"external_url": js})
+
+
+# app.config.suppress_callback_exceptions = True
 app.title = 'Dashboard Demo'
 CORS(server)
 
-if 'DYNO' in os.environ:
-    app.scripts.append_script({
-        'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'  # noqa: E501
-    })
+
+@server.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(server.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+# if 'DYNO' in os.environ:
+#     app.scripts.append_script({
+#         'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'  # noqa: E501
+#     })
 
 # Create controls
 
@@ -57,66 +78,57 @@ layout = dict(
 )
 
 
-def generate_table(dataframe, max_rows=6):
+
+def generate_table(dataframe, max_rows=10):
     return html.Table(
         # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns])] +
-
+        [html.Tr([html.Th(col) for col in dataframe.columns ])] +
         # Body
         [html.Tr([
-            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+            html.Td(dataframe.iloc[i][col] ) for col in dataframe.columns
         ]) for i in range(min(len(dataframe), max_rows))]
     )
+
+def get_header():
+    header=html.Div(
+        [
+            html.H1(
+                'Admin Dashboard \n',
+                className='eight columns',
+            ),
+            html.Img(
+                src="https://www.covetly.com/Content/images/covetly-logo-trans-with-slight-space-top-and-bottom.png",
+                className='one columns',
+                style={
+                    'height': '80',
+                    'width': '225',
+                    'float': 'right',
+                    'position': 'relative',
+                },
+            ),
+        ],
+        className='row'
+    )
+    return header
+
+
+def get_menu():
+    menu = html.Div([
+
+        dcc.Link('Demo   ', href='/demo', className="tab first"),
+
+        dcc.Link('About Myself   ', href='/myself', className="tab"),
+
+    ], className="row ")
+    return menu
 
 # In[]:
 # Create app layout
 app.layout = html.Div(
     [   #Top text and logo
-        html.Link(rel="shortcut icon", href="favicon.ico"),
-        html.Div(
-            [
-                html.H1(
-                    'Admin Dashboard \n',
-                    className='eight columns',
-                ),
-                html.Img(
-                    src="https://www.covetly.com/Content/images/covetly-logo-trans-with-slight-space-top-and-bottom.png",
-                    className='one columns',
-                    style={
-                        'height': '80',
-                        'width': '225',
-                        'float': 'right',
-                        'position': 'relative',
-                    },
-                ),
-            ],
-            className='row'
-        ),
-        #Statistics information, update 'well_text', 'production_text', and 'year_text'
-        html.Div(
-            [
-                html.H5(
-                    '',
-                    id='well_text',
-                    className='two columns',
-                ),
-                html.H5(
-                    '',
-                    id='production_text',
-                    className='eight columns',
-                    style={'text-align': 'center'}
-                ),
-                html.H5(
-                    '',
-                    id='year_text',
-                    className='two columns',
-                    style={'text-align': 'right'}
-                ),
-            ],
-            className='row'
-        ),
-
-
+        get_header(),
+        html.Br([]),
+        # get_menu(),
         html.Div(
             [
                 html.H2(''),
@@ -133,11 +145,11 @@ app.layout = html.Div(
                 dcc.RadioItems(
                     id='category_name_selector',
                     options=[
-                        {'label': 'All ', 'value': 'all'},
-                        {'label': 'LowInventory(top3)', 'value': 'LowInventory(top3)'},
-                        {'label': 'Customize ', 'value': 'custom'}
+                        {'label': 'All   ', 'value': 'all'},
+                        {'label': '  LowInventory(top3)  ', 'value': 'LowInventory(top3)'},
+                        {'label': '  Customize ', 'value': 'custom'}
                     ],
-                    value='active',
+                    value='LowInventory(top3)',
                     labelStyle={'display': 'inline-block'}
                 ),
                 dcc.Dropdown(
@@ -191,8 +203,10 @@ app.layout = html.Div(
             dcc.Input(id='userId',
                       value='Input User ID',
                       type='text'),
-            html.Div(id='userId-div')
-        ], className='twelve columns'
+            html.Div(id='userId-div', style={'textAlign': 'center',})
+        ],
+            className='twelve columns',
+            style={'width': '100%', 'margin': 'auto', 'display': 'block'}
         ),
 
         # Overview Section
@@ -202,7 +216,7 @@ app.layout = html.Div(
                 html.H2(
                     'Business Overview ',
                     className='eight columns',
-                    style={'text-align': 'center'},
+                    style={'text-align': 'center','margin-top': '40', 'marginBottom': 20},
                 ),
             ],
             className='row'
@@ -251,32 +265,22 @@ app.layout = html.Div(
                 ),
             ]),
     ],
-    className='ten columns offset-by-one'
+    className='ten columns offset-by-one',
 )
 
+# Describe the layout, or the UI, of the app
 
 
 
-# area
-# Radio -> multi
-# The right selection
 @app.callback(Output('category_name_dropdown', 'value'),
               [Input('category_name_selector', 'value')])
 def display_type(selector):
     if selector == 'all':
         return list(CATEGORY_NAME.keys())
     elif selector == 'LowInventory(top3)':
-        return ['Funko', 'Amiibo', 'DisneyI']
+        return ['Funko', 'Amiibo', 'DisneyI', 'Berbrick', 'Dorbz']
     else:
-        return ['Funko', 'Amiibo', 'DisneyI']
-
-
-@app.server.route('/favicon.ico')
-def favicon():
-    print(app.server.root_path)
-    return flask.send_from_directory(os.path.join(app.server.root_path, 'static'),'favicon.ico', \
-                                     '/favicon.icon')
-
+        return ['Funko', 'Amiibo', 'DisneyI','Berbrick', 'Dorbz']
 
 
 @app.callback(
@@ -299,7 +303,6 @@ def update_output_div(input_value, category_name_dropdown):
         df = pd.read_csv('../data/userTable.csv')
         df = df[df['userID']==int(input_value)]
         return generate_table(df)
-
 
 
 ###############################
@@ -699,4 +702,4 @@ def make_user_seller_graph(summary_graph_hover):
 # In[]:
 # Main
 if __name__ == '__main__':
-    app.server.run(host= '0.0.0.0',debug=True, threaded=True)
+    app.server.run(host= '0.0.0.0',debug=True)

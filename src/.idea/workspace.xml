@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3853006-678c-4bff-a9be-a2885bb682bc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/points.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,27 +27,29 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="Procfile" value="1" />
-          <entry key="py" value="22" />
+          <entry key="Procfile" value="2" />
+          <entry key="ico" value="2" />
+          <entry key="py" value="24" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="PLAIN_TEXT" value="1" />
-          <entry key="Python" value="22" />
+          <entry key="Image" value="2" />
+          <entry key="PLAIN_TEXT" value="2" />
+          <entry key="Python" value="24" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="206" />
-          <entry key="dummy" value="5" />
-          <entry key="py" value="2999" />
+          <entry key="dummy" value="6" />
+          <entry key="py" value="3381" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="5" />
-          <entry key="Python" value="3203" />
+          <entry key="PLAIN_TEXT" value="6" />
+          <entry key="Python" value="3585" />
           <entry key="SQL" value="2" />
         </counts>
       </usages-collector>
@@ -56,10 +60,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="273">
-              <caret line="278" lean-forward="true" selection-start-line="278" selection-end-line="278" />
+            <state relative-caret-position="151">
+              <caret line="218" column="87" selection-start-line="218" selection-start-column="87" selection-end-line="218" selection-end-column="87" />
               <folding>
                 <element signature="e#36#45#0" expanded="true" />
+                <marker date="1538584357515" expanded="true" signature="2363:2966" ph="..." />
+                <marker date="1538584357515" expanded="true" signature="18751:18753" ph="..." />
               </folding>
             </state>
           </provider>
@@ -81,17 +87,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/controls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="108" column="113" selection-start-line="108" selection-start-column="113" selection-end-line="108" selection-end-column="113" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            <state relative-caret-position="240">
+              <caret line="70" column="81" selection-start-line="70" selection-start-column="76" selection-end-line="70" selection-end-column="81" />
             </state>
           </provider>
         </entry>
@@ -147,6 +144,13 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>data</find>
@@ -161,13 +165,20 @@
       <find>@app.callback(Output('well_types', 'value'),</find>
       <find>category_name_dropdow</find>
       <find>well_status_selector</find>
-      <find>wishlistGroupbyModule</find>
       <find>df</find>
       <find>category_inventory_graph_layout</find>
       <find>gene</find>
       <find>dash</find>
       <find>icon</find>
       <find>route</find>
+      <find>server</find>
+      <find>add_url_rule</find>
+      <find>favicon</find>
+      <find>ico</find>
+      <find>Myself</find>
+      <find>all</find>
+      <find>wishlistGroupbyModule</find>
+      <find>Business Overview</find>
     </findStrings>
     <replaceStrings>
       <replace>CATEGORY_NAME</replace>
@@ -188,6 +199,9 @@
         <option value="$PROJECT_DIR$/syncAwsRDS.py" />
         <option value="$PROJECT_DIR$/dashInterface.py" />
         <option value="$PROJECT_DIR$/controls.py" />
+        <option value="$PROJECT_DIR$/apps/app.py" />
+        <option value="$PROJECT_DIR$/index.py" />
+        <option value="$PROJECT_DIR$/apps/app1.py" />
         <option value="$PROJECT_DIR$/app.py" />
       </list>
     </option>
@@ -199,8 +213,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-45" />
-    <option name="y" value="31" />
+    <option name="x" value="63" />
+    <option name="y" value="65" />
     <option name="width" value="1260" />
     <option name="height" value="777" />
   </component>
@@ -219,6 +233,16 @@
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="src" type="b2602c69:ProjectViewProjectNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="clv" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="src" type="b2602c69:ProjectViewProjectNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -241,6 +265,12 @@
         <option name="myModuleName" value="src" />
       </console-settings>
     </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/" />
+      <recent name="$PROJECT_DIR$/apps" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -292,10 +322,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-45" y="31" width="1260" height="777" extended-state="0" />
+    <frame x="63" y="65" width="1260" height="777" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2536946" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.28407225" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -415,6 +445,46 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pipelineToSQL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="326">
+          <caret line="109" column="54" lean-forward="true" selection-start-line="109" selection-start-column="54" selection-end-line="109" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" column="30" lean-forward="true" selection-start-line="22" selection-start-column="30" selection-end-line="22" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#34#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" selection-start-line="2" selection-end-line="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Procfile">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/favicon.ico">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/controls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="70" column="81" selection-start-line="70" selection-start-column="76" selection-end-line="70" selection-end-column="81" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dashInterface.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
@@ -426,32 +496,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/controls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="108" column="113" selection-start-line="108" selection-start-column="113" selection-end-line="108" selection-end-column="113" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pipelineToSQL.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="326">
-          <caret line="109" column="54" lean-forward="true" selection-start-line="109" selection-start-column="54" selection-end-line="109" selection-end-column="54" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Procfile">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="278" lean-forward="true" selection-start-line="278" selection-end-line="278" />
+        <state relative-caret-position="151">
+          <caret line="218" column="87" selection-start-line="218" selection-start-column="87" selection-end-line="218" selection-end-column="87" />
           <folding>
             <element signature="e#36#45#0" expanded="true" />
+            <marker date="1538584357515" expanded="true" signature="2363:2966" ph="..." />
+            <marker date="1538584357515" expanded="true" signature="18751:18753" ph="..." />
           </folding>
         </state>
       </provider>
