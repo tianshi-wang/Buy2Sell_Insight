@@ -18,21 +18,12 @@ from controls import CATEGORY_NAME, CATEGORY_COLORS
 
 # external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__)
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
+app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-stylesheets/2d266c578d2a6e8850ebce48fdb52759b2aef506/stylesheet-oil-and-gas.css'})
 server = app.server
-
-app.css.append_css({
-    'external_url': (
-        'https://cdn.rawgit.com/chriddyp/0247653a7c52feb4c48437e1c1837f75'
-        '/raw/a68333b876edaf62df2efa7bac0e9b3613258851/dash.css'
-    )
-})
-
-external_js = ["https://code.jquery.com/jquery-3.2.1.min.js",
-               "https://codepen.io/bcd/pen/YaXojL.js"]
-
-for js in external_js:
-    app.scripts.append_script({"external_url": js})
 
 
 # app.config.suppress_callback_exceptions = True
@@ -146,10 +137,10 @@ app.layout = html.Div(
                     id='category_name_selector',
                     options=[
                         {'label': 'All   ', 'value': 'all'},
-                        {'label': '  LowInventory(top3)  ', 'value': 'LowInventory(top3)'},
+                        {'label': '  LowInventory(top5)  ', 'value': 'LowInventory(top5)'},
                         {'label': '  Customize ', 'value': 'custom'}
                     ],
-                    value='LowInventory(top3)',
+                    value='LowInventory(top5)',
                     labelStyle={'display': 'inline-block'}
                 ),
                 dcc.Dropdown(
@@ -215,7 +206,7 @@ app.layout = html.Div(
                 html.H2(''),
                 html.H2(
                     'Business Overview ',
-                    className='eight columns',
+                    className='twelve columns',
                     style={'text-align': 'center','margin-top': '40', 'marginBottom': 20},
                 ),
             ],
@@ -277,7 +268,7 @@ app.layout = html.Div(
 def display_type(selector):
     if selector == 'all':
         return list(CATEGORY_NAME.keys())
-    elif selector == 'LowInventory(top3)':
+    elif selector == 'LowInventory(top5)':
         return ['Funko', 'Amiibo', 'DisneyI', 'Berbrick', 'Dorbz']
     else:
         return ['Funko', 'Amiibo', 'DisneyI','Berbrick', 'Dorbz']

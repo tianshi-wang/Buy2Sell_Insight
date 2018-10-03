@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3853006-678c-4bff-a9be-a2885bb682bc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/points.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -43,13 +41,13 @@
         <counts>
           <entry key="Python Console" value="206" />
           <entry key="dummy" value="6" />
-          <entry key="py" value="3381" />
+          <entry key="py" value="3392" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="6" />
-          <entry key="Python" value="3585" />
+          <entry key="Python" value="3596" />
           <entry key="SQL" value="2" />
         </counts>
       </usages-collector>
@@ -60,12 +58,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="151">
-              <caret line="218" column="87" selection-start-line="218" selection-start-column="87" selection-end-line="218" selection-end-column="87" />
+            <state relative-caret-position="288">
+              <caret line="213" column="10" lean-forward="true" selection-start-line="213" selection-start-column="10" selection-end-line="213" selection-end-column="10" />
               <folding>
                 <element signature="e#36#45#0" expanded="true" />
-                <marker date="1538584357515" expanded="true" signature="2363:2966" ph="..." />
-                <marker date="1538584357515" expanded="true" signature="18751:18753" ph="..." />
+                <marker date="1538584631206" expanded="true" signature="2249:2852" ph="..." />
+                <marker date="1538584631206" expanded="true" signature="18638:18640" ph="..." />
               </folding>
             </state>
           </provider>
@@ -179,6 +177,7 @@
       <find>all</find>
       <find>wishlistGroupbyModule</find>
       <find>Business Overview</find>
+      <find>top</find>
     </findStrings>
     <replaceStrings>
       <replace>CATEGORY_NAME</replace>
@@ -498,12 +497,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="151">
-          <caret line="218" column="87" selection-start-line="218" selection-start-column="87" selection-end-line="218" selection-end-column="87" />
+        <state relative-caret-position="288">
+          <caret line="213" column="10" lean-forward="true" selection-start-line="213" selection-start-column="10" selection-end-line="213" selection-end-column="10" />
           <folding>
             <element signature="e#36#45#0" expanded="true" />
-            <marker date="1538584357515" expanded="true" signature="2363:2966" ph="..." />
-            <marker date="1538584357515" expanded="true" signature="18751:18753" ph="..." />
+            <marker date="1538584631206" expanded="true" signature="2249:2852" ph="..." />
+            <marker date="1538584631206" expanded="true" signature="18638:18640" ph="..." />
           </folding>
         </state>
       </provider>
