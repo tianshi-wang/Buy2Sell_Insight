@@ -8,11 +8,13 @@ from connLocalDB import connDB
 from sklearn.metrics import fbeta_score, make_scorer
 
 
-# 'bootstrap': [True],
-# 'max_depth': [30, 40, 50],
-# 'max_features': [10, 20, 30],
-# 'min_samples_leaf': [3, 5, 10, 20],
 class Rfc_cv(object):
+    """
+    Random Forest Classifer Cross Validation Class
+    Methods:
+        train_model: update best_parameter and best_model
+        evaluate: evaluate on test-dataset, return scores
+    """
     def __init__(self ):
         self.param_grid = {
             'n_estimators': [600],
@@ -70,11 +72,10 @@ class Rfc_cv(object):
         print('Accuracy = {:0.2f}%.'.format(accuracy))
         return accuracy, recallScore, f1lScore
 
-
-def trainModel():
+def getData():
     """
-    Train model
-    :return:
+    Grep data from local SQL database
+    :return: DataFrame containing train and test data
     """
     _, conn = connDB()
     join_email_query = """
@@ -98,56 +99,63 @@ def trainModel():
     features = features[np.logical_or(features['selling']==0, np.logical_and(features['selling']==1,features['sumFeatures']>3))]
     print("Total sellers after removing ebay-migrant is"+ str(features[features['selling']==1].shape[0]))
     features = features.drop('sumFeatures',axis=1)
+    return features
 
-    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split( \
-        features.iloc[:,:-1], features.iloc[:,-1], test_size=0.30, random_state=32)
 
+def resampleTraining(X_train, y_train, oversample=False):
     train_matrix = X_train.join(y_train)
-    train_resampled_neg = train_matrix[train_matrix['selling']==0].sample(frac=0.01,random_state=42)
-    train_resampled_pos = train_matrix[train_matrix['selling']==1]
+    train_resampled_neg = train_matrix[train_matrix['selling'] == 0].sample(frac=0.01, random_state=42)
+    train_resampled_pos = train_matrix[train_matrix['selling'] == 1]
 
-    print("Number of sellers in training set is "+str(train_resampled_pos.shape[0]) + " and " + str(train_resampled_neg.shape[0])+ " are not.")
-    print("Number of sellers in test set is "+str(sum(y_test))+" and "+str(sum(y_test==0))+" are not.")
+    print("Number of sellers in training set is " + str(train_resampled_pos.shape[0]) + " and " + str(
+        train_resampled_neg.shape[0]) + " are not.")
 
-    X_train_resampled = train_resampled_neg.append(train_resampled_pos).iloc[:,:-1]
-    y_train_resampled = train_resampled_neg.append(train_resampled_pos).iloc[:,-1]
+    X_train_resampled = train_resampled_neg.append(train_resampled_pos).iloc[:, :-1]
+    y_train_resampled = train_resampled_neg.append(train_resampled_pos).iloc[:, -1]
+    if not oversample:
+        return X_train_resampled, y_train_resampled
+    else:
+        X_train_resampled_oversampled, y_train_resampled_oversampled = SMOTE(kind='borderline1').fit_sample(\
+                            X_train_resampled, y_train_resampled)
 
-    X_train_resampled_oversampled, y_train_resampled_oversampled = SMOTE(kind='borderline1').fit_sample(X_train_resampled, y_train_resampled)
-    #print("Number of sellers in reampled training set is "+str(sum(y_train_resampled))+" and "+str(sum(y_train_resampled==0))+" are not.")
-
-    rfc = Rfc_cv()
-
-    print("Training model using undersample + oversample")
-    rfc.train_model( X_train_resampled_oversampled, y_train_resampled_oversampled)
-
-    print("Training set result:")
-    # accu, recallscore, f1Score = rfc.evaluate(X_train_resampled_oversampled, y_train_resampled_oversampled)
-    # print(str(accu)+":"+str(recallscore)+":"+str(f1Score))
-    print("Test set result:")
-    accu, recallscore, f1Score = rfc.evaluate(X_test, y_test)
-    print(str(accu)+":"+str(recallscore)+":"+str(f1Score))
-
-    print('Weight for each features:')
-    print(str(columns))
-    print(str(rfc.best_model.feature_importances_))
-
-    print("Training model using undersample only")
-    rfc.train_model( X_train_resampled, y_train_resampled)
-
-    print("Training set result:")
-    # accu, recallscore, f1Score = rfc.evaluate(X_train_resampled_oversampled, y_train_resampled_oversampled)
-    # print(str(accu)+":"+str(recallscore)+":"+str(f1Score))
-    print("Test set result:")
-    accu, recallscore, f1Score = rfc.evaluate(X_test, y_test)
-    print(str(accu)+":"+str(recallscore)+":"+str(f1Score))
-
-    print('Weight for each features:')
-    print(str(columns))
-    print(str(rfc.best_model.feature_importances_))
-
+        return X_train_resampled_oversampled, y_train_resampled_oversampled
 
 def main():
-    trainModel()
+    """
+     Train random forest classifier
+     1. Create freatures
+     2. Split dataset to train/test
+     3. Resample data (both undersampling and oversampling)
+     4. Train the model
+     5. Show test results
+     """
+    features = getData()   # Features (not split yet) from SQL
+    X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split( \
+        features.iloc[:, :-1], features.iloc[:, -1], test_size=0.30, random_state=32)
+    X_train_resampled, y_train_resampled = resampleTraining(X_train, y_train)
+    X_train_resampled_oversampled, y_train_resampled_oversampled = resampleTraining(X_train, y_train, oversample=True)
+    print("Number of sellers in test set is " + str(sum(y_test)) + " and " + str(sum(y_test == 0)) + " are not.")
+
+    rfc = Rfc_cv()
+    print("Training model using undersample + oversample")
+    rfc.train_model(X_train_resampled_oversampled, y_train_resampled_oversampled)
+    print("Test set result:")
+    accu, recallscore, f1Score = rfc.evaluate(X_test, y_test)
+    print(str(accu) + ":" + str(recallscore) + ":" + str(f1Score))
+
+    print('Weight for each features:')
+    print(str(rfc.best_model.feature_importances_))
+    #
+    # print("Training model using undersample only")
+    # rfc.train_model(X_train_resampled, y_train_resampled)
+    #
+    # print("Test set result:")
+    # accu, recallscore, f1Score = rfc.evaluate(X_test, y_test)
+    # print(str(accu) + ":" + str(recallscore) + ":" + str(f1Score))
+    #
+    # print('Weight for each features:')
+    # print(str(rfc.best_model.feature_importances_))
+
 
 if __name__ == "__main__":
     main()

@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d3853006-678c-4bff-a9be-a2885bb682bc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../data/dash-logo copy.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data/fp_11" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data/tp_11" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/cache.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pipelineToSQL.py" beforeDir="false" afterPath="$PROJECT_DIR$/downloadFromCovetly.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modelTraining.py" beforeDir="false" afterPath="$PROJECT_DIR$/modelTraining.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,27 +29,27 @@
         <counts>
           <entry key="Procfile" value="2" />
           <entry key="ico" value="2" />
-          <entry key="py" value="29" />
+          <entry key="py" value="30" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Image" value="2" />
           <entry key="PLAIN_TEXT" value="2" />
-          <entry key="Python" value="29" />
+          <entry key="Python" value="30" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="239" />
           <entry key="dummy" value="25" />
-          <entry key="py" value="4475" />
+          <entry key="py" value="5214" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="25" />
-          <entry key="Python" value="4708" />
+          <entry key="Python" value="5447" />
           <entry key="SQL" value="6" />
         </counts>
       </usages-collector>
@@ -74,14 +70,15 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app.py">
+        <entry file="file://$PROJECT_DIR$/modelTraining.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="362">
-              <caret line="160" column="32" lean-forward="true" selection-start-line="160" selection-start-column="32" selection-end-line="160" selection-end-column="32" />
+            <state relative-caret-position="267">
+              <caret line="141" column="29" lean-forward="true" selection-start-line="141" selection-start-column="29" selection-end-line="141" selection-end-column="29" />
               <folding>
-                <element signature="e#36#45#0" expanded="true" />
-                <marker date="1538687668733" expanded="true" signature="2377:2980" ph="..." />
-                <marker date="1538687668733" expanded="true" signature="18546:18548" ph="..." />
+                <element signature="e#0#48#0" expanded="true" />
+                <marker date="1538690219968" expanded="true" signature="3117:4235" ph="..." />
+                <marker date="1538690219968" expanded="true" signature="5171:5173" ph="..." />
+                <marker date="1538690219968" expanded="true" signature="5184:6757" ph="..." />
               </folding>
             </state>
           </provider>
@@ -101,34 +98,12 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/controls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-330">
-              <caret line="70" column="81" selection-start-line="70" selection-start-column="76" selection-end-line="70" selection-end-column="81" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/connLocalDB.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="318">
               <caret line="22" selection-start-line="22" selection-end-line="22" />
               <folding>
                 <element signature="e#1#37#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/syncAwsRDS.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#36#0" expanded="true" />
-                <marker date="1538481258072" expanded="true" signature="851:892" ph="..." />
               </folding>
             </state>
           </provider>
@@ -189,7 +164,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>gene</find>
       <find>dash</find>
       <find>icon</find>
       <find>route</find>
@@ -219,6 +193,7 @@
       <find>to_</find>
       <find>userId</find>
       <find>LowInventory(</find>
+      <find>Filter by categories:</find>
     </findStrings>
     <replaceStrings>
       <replace>CATEGORY_NAME</replace>
@@ -244,6 +219,7 @@
         <option value="$PROJECT_DIR$/downloadFromCovetly.py" />
         <option value="$PROJECT_DIR$/cache.py" />
         <option value="$PROJECT_DIR$/app.py" />
+        <option value="$PROJECT_DIR$/modelTraining.py" />
       </list>
     </option>
   </component>
@@ -274,16 +250,6 @@
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="src" type="b2602c69:ProjectViewProjectNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="clv" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="src" type="b2602c69:ProjectViewProjectNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -364,14 +330,15 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27948305" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27948305" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.329927" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49917898" visible="true" weight="0.31824818" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49917898" visible="true" weight="0.31824818" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -463,7 +430,6 @@
           <caret line="15" column="22" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
-            <marker date="1538481258072" expanded="true" signature="851:892" ph="..." />
           </folding>
         </state>
       </provider>
@@ -516,16 +482,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/downloadFromCovetly.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="136" column="6" selection-start-line="136" selection-start-column="6" selection-end-line="136" selection-end-column="6" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/envs/insight/lib/python3.6/site-packages/pandas/io/sql.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="313">
@@ -547,12 +503,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
+        <state relative-caret-position="2400">
           <caret line="160" column="32" lean-forward="true" selection-start-line="160" selection-start-column="32" selection-end-line="160" selection-end-column="32" />
           <folding>
             <element signature="e#36#45#0" expanded="true" />
-            <marker date="1538687668733" expanded="true" signature="2377:2980" ph="..." />
-            <marker date="1538687668733" expanded="true" signature="18546:18548" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/downloadFromCovetly.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="136" column="6" selection-start-line="136" selection-start-column="6" selection-end-line="136" selection-end-column="6" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modelTraining.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="141" column="29" lean-forward="true" selection-start-line="141" selection-start-column="29" selection-end-line="141" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#48#0" expanded="true" />
+            <marker date="1538690219968" expanded="true" signature="3117:4235" ph="..." />
+            <marker date="1538690219968" expanded="true" signature="5171:5173" ph="..." />
+            <marker date="1538690219968" expanded="true" signature="5184:6757" ph="..." />
           </folding>
         </state>
       </provider>
