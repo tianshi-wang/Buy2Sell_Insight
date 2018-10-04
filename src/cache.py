@@ -27,6 +27,11 @@ def groupby_pivot(df,rowIdx, colIdx, val):
     df_groupby_pivoted = df_groupby.pivot(index=rowIdx, columns=colIdx, values=val).fillna(value=0)
     return df_groupby_pivoted
 
+def handle_date(df, col='created_date'):
+    df['month'] = df[col].apply(lambda x: (x.year - 2017) * 12 + x.month)  # "added month index 2017-01 as 1"
+    df = df.drop([col], axis=1)
+    return df
+
 def userClean():
     engine, conn = connDB()
     sql_query = """
@@ -111,6 +116,30 @@ def writeCollectionByUser():
     user_module.to_sql('collectiongroupbyuserandmodule', engine, if_exists='replace', index=False)
     user_category.to_sql('collectiongroupbyuserandcategory', engine, if_exists='replace', index=False)
 
+def writeInventory():
+    sql_query="""
+    SELECT  "itemId", "ModuleName", "CategoryName","CreatedDate"
+    FROM inventory
+    WHERE "CreatedDate" >= '2017-09-01'::date
+    """
+    engine, conn = connDB()
+    df = pd.read_sql_query(sql_query,conn)
+    df = handle_date(df, col='CreatedDate')
+    df_module = groupby_pivot(df, rowIdx='ModuleName', colIdx='month', val='itemId')
+    df_module.to_csv('../data/inventory_module.csv')
+    df_module.to_sql('inventorybymodule', engine, if_exists='replace')
+
+    df_category = groupby_pivot(df, rowIdx='CategoryName', colIdx='month', val='itemId')
+    getModule_query = """
+    SELECT DISTINCT "ModuleName", "CategoryName"
+    FROM items
+    """
+    df_module_category = pd.read_sql_query(getModule_query, conn)
+    df_category = df_module_category.set_index('CategoryName').join(df_category)
+    df_category.to_csv('../data/inventory_subcategory.csv')
+    df_category.to_sql('inventorybycategory', engine, if_exists='replace')
+
+
 
 def writeWishlistGroupby():
     """
@@ -134,7 +163,21 @@ def writeWishlistGroupby():
     df_groupbyCategory_pivoted['sum'] = df_groupbyCategory_pivoted.sum(axis=1)
     df_groupbyCategory_pivoted = df_groupbyCategory_pivoted.sort_values(['sum'], ascending=False)
     df_groupbyCategory_pivoted = df_groupbyCategory_pivoted.drop('sum',axis=1)
-    df_groupbyCategory_pivoted.to_sql('wishlistgroupbycategory', engine, if_exists='replace')
+
+    getModule_query = """
+    SELECT DISTINCT "Category", "ModuleName", "CategoryName"
+    FROM items
+    """
+    df_module = pd.read_sql_query(getModule_query, conn)
+    df_print = df_module.set_index('Category').join(df_groupbyCategory_pivoted)
+    df_print.to_csv('../data/wishilist_category')
+    df_print.to_sql('wishlistgroupbycategory', engine, if_exists='replace')
+
+    months = list(df_print.columns)[2:]
+    df_module = df_print.groupby(['ModuleName'])[months].sum()
+    df_module.to_csv('../data/wishilist_module')
+    df_module.to_sql('wishlistgroupbymodule', engine, if_exists='replace')
+
 
     df_series = df.groupby(['userId', 'month'])['itemId'].count()
     df_groupbyUser = df_series.to_frame()
@@ -331,9 +374,10 @@ def main():
     # dataIngestion module read the cache SQL and return DF for plot in Dashboard.
     # writeOrderGroupby()
     # writeCollectionGroupbyUserAndModule()
-    writeCollectionByUser()
+    # writeCollectionByUser()
     # writeSummary()
-    # writeWishlistGroupby()
+    writeInventory()
+    writeWishlistGroupby()
     # writeFeatures()
     # writeCollectionGroupbyModule()
     # writeCollectionGroupbyUserAndModule()

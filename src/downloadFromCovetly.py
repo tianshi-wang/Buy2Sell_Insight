@@ -102,11 +102,12 @@ def downloadWishList(domainDB,engine):
 
 def downloadItems(categoryDB,engine):
     db = categoryDB.moduleitems
-    df = pd.DataFrame(columns=['itemId','name', 'ModuleName', 'CategoryName'])
+    df = pd.DataFrame(columns=['itemId','name', "Category" 'ModuleName', 'CategoryName'])
     idx=0
     for doc in db.find({}, { \
         "_id": "$_id",
         "Name": "$Name",
+        "CategoryName":"CategoryName",
         "SeoFriendlyModuleName": "$SeoFriendlyModuleName",
         "SeoFriendlyCategoryName": "$SeoFriendlyCategoryName"
             }).sort([('_id',pymongo.DESCENDING)]):
@@ -115,13 +116,39 @@ def downloadItems(categoryDB,engine):
             print(idx)
         try:
             newRowDF = pd.DataFrame([[ \
-                doc['_id'],doc['Name'],doc['SeoFriendlyModuleName'], doc['SeoFriendlyCategoryName']\
-                ]], columns=['itemId','name', 'ModuleName', 'CategoryName']\
+                doc['_id'],doc['Name'],doc['CategoryName'],doc['SeoFriendlyModuleName'], doc['SeoFriendlyCategoryName']\
+                ]], columns=['itemId','name', 'Category','ModuleName', 'CategoryName']\
                 )
             df = df.append(newRowDF, ignore_index=True)
         except:
             print("Loading data error at line"+str(idx))
     df.to_sql('items', engine, if_exists='replace')
+
+
+def downloadInventory(categoryDB, engine):
+    db = categoryDB.inventoryitems
+    df = pd.DataFrame(columns=['itemId', 'ModuleName', 'CategoryName', "CreatedDate"])
+    idx = 0
+    for doc in db.find({}, { \
+            "ItemId": "$ItemId",
+        "Item.SeoFriendlyModuleName": "$Item.SeoFriendlyModuleName",
+        "Item.SeoFriendlyCategoryName": "$Item.SeoFriendlyCategoryName",
+        "CreatedDate": "$CreatedDate",
+    }):
+        idx += 1
+        if idx % 1000 == 0:
+            print(idx)
+        try:
+            newRowDF = pd.DataFrame([[ \
+                doc['ItemId'], doc['Item']['SeoFriendlyModuleName'],  doc['Item']['SeoFriendlyCategoryName'],
+                doc['CreatedDate'] \
+                ]], columns=['itemId', 'ModuleName', 'CategoryName', "CreatedDate"] \
+                )
+            df = df.append(newRowDF, ignore_index=True)
+        except:
+            print("Loading data error at line" + str(idx))
+    df.to_sql('inventory', engine, if_exists='replace')
+
 
 
 def downloadUsers(domainDB,engine):
@@ -190,10 +217,11 @@ def downloadSellers(domainDB,engine):
 def main():
     categoryDB, domainDB = connMongo.conn(sys.argv[1], sys.argv[2]) #pw_for_InvDB, pw_for_DomainDB
     engine = createDB()
+    downloadInventory(domainDB,engine)
     # downloadWishList(domainDB,engine)
     # downloadOrder(domainDB,engine)
     # downloadUsers(domainDB, engine)
-    downloadItems(categoryDB, engine)
+    # downloadItems(categoryDB, engine)
 
 
 if __name__ == "__main__":

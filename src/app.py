@@ -14,6 +14,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dashInterface
 from controls import CATEGORY_NAME, CATEGORY_COLORS
+import dash_table_experiments as dte
+
 
 
 # external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -43,6 +45,10 @@ def favicon():
 
 # Create controls
 
+df = pd.read_csv('../data/userTable.csv')
+DF_GAPMINDER = df
+DF_GAPMINDER.loc[:20]
+
 category_name_options = [{'label': str(CATEGORY_NAME[category_name]),
                         'value': str(category_name)}
                        for category_name in CATEGORY_NAME]
@@ -68,7 +74,7 @@ layout = dict(
     legend=dict(font=dict(size=10), orientation='h'),
 )
 
-
+test=''
 
 def generate_table(dataframe, max_rows=10):
     return html.Table(
@@ -137,10 +143,10 @@ app.layout = html.Div(
                     id='category_name_selector',
                     options=[
                         {'label': 'All   ', 'value': 'all'},
-                        {'label': '  LowInventory(top5)  ', 'value': 'LowInventory(top5)'},
+                        {'label': '  LowInventory(top3)  ', 'value': 'LowInventory(top3)'},
                         {'label': '  Customize ', 'value': 'custom'}
                     ],
-                    value='LowInventory(top5)',
+                    value='LowInventory(top3)',
                     labelStyle={'display': 'inline-block'}
                 ),
                 dcc.Dropdown(
@@ -182,23 +188,33 @@ app.layout = html.Div(
             [
                 html.H2(''),
                 html.H2(
-                    '\nHigh-impact sellers recommendation\n',
+                    '\nPotential high-impact sellers\n',
                     style={'text-align': 'center'},
                     className='twelve columns',
                 ),
             ],
             className='row'
         ),
-        # Three  graphs
+
+
+
+
         html.Div([
-            dcc.Input(id='userId',
-                      value='Input User ID',
-                      type='text'),
-            html.Div(id='userId-div', style={'textAlign': 'center',})
-        ],
-            className='twelve columns',
-            style={'width': '100%', 'margin': 'auto', 'display': 'block'}
-        ),
+            # html.H4('Gapminder DataTable'),
+            dte.DataTable(
+                rows=[{}],
+                row_selectable=True,
+                filterable=True,
+                sortable=True,
+                selected_row_indices=[],
+                id='datatable-gapminder'
+            # optional - sets the order of columns
+                # columns=sorted(DF_GAPMINDER.columns)
+            ),
+            html.Div(id='selected-indexes'),
+        ], className="container"),
+
+
 
         # Overview Section
         html.Div(
@@ -263,37 +279,38 @@ app.layout = html.Div(
 
 
 
+
+
+
+
+@app.callback(Output('datatable-gapminder', 'rows'),
+              [Input('category_name_dropdown', 'value')],)
+def update_table(category_name_dropdown):
+    """
+    For user selections, return the relevant table
+    """
+    df = pd.read_csv('../data/userTable.csv')
+    selectedCategories = [CATEGORY_NAME[idx] for idx in category_name_dropdown]
+    selected_weight = list(df[selectedCategories].sum(axis=1))
+    df['score'] = [int(selected_weight[idx] * list(df['likelihood'])[idx] * 100) / 100 for idx in range(df.shape[0])]
+    df_to_print = df.iloc[:, :3].join(df.loc[:, selectedCategories]).join(df['score'])
+    df_to_print = df_to_print.sort_values(by='score', ascending=False)
+    return df_to_print.to_dict('records')
+
+
+
+
 @app.callback(Output('category_name_dropdown', 'value'),
               [Input('category_name_selector', 'value')])
 def display_type(selector):
     if selector == 'all':
         return list(CATEGORY_NAME.keys())
-    elif selector == 'LowInventory(top5)':
-        return ['Funko', 'Amiibo', 'DisneyI', 'Berbrick', 'Dorbz']
+    elif selector == 'LowInventory(top3)':
+        return ['Funko', 'Amiibo',  'Dorbz']
     else:
-        return ['Funko', 'Amiibo', 'DisneyI','Berbrick', 'Dorbz']
+        return ['Funko', 'Amiibo', 'Dorbz']
 
 
-@app.callback(
-    Output(component_id='userId-div', component_property='children'),
-    [Input(component_id='userId', component_property='value'),
-     Input('category_name_dropdown', 'value')]
-)
-def update_output_div(input_value, category_name_dropdown):
-    print("type of category_name_dropdown")
-    print(type(category_name_dropdown))
-    print(category_name_dropdown)
-    selectedCategories = [CATEGORY_NAME[idx] for idx in category_name_dropdown]
-    if input_value=="Input User ID":
-        df = pd.read_csv('../data/userTable.csv')
-        selected_weight = list(df[selectedCategories].sum(axis=1))
-        df['score'] = [int(selected_weight[idx]*list(df['likelihood'])[idx]*100)/100 for idx in range(df.shape[0]) ]
-        df_to_print = df.iloc[:,:3].join(df.loc[:,selectedCategories]).join(df['score'])
-        return generate_table(df_to_print.sort_values(by=['score'],ascending=False))
-    else:
-        df = pd.read_csv('../data/userTable.csv')
-        df = df[df['userID']==int(input_value)]
-        return generate_table(df)
 
 
 ###############################
@@ -308,6 +325,7 @@ def make_category_inventory_figure(category_name_dropdown, category_inventory_gr
     category_inventory_df= pd.read_csv("../data/category_inventory.csv", index_col=0)
     for idx in range(len(category_name_dropdown)):
         print(CATEGORY_NAME[category_name_dropdown[idx]])
+
         data.append(dict(
             type='scatter',
             mode='lines+markers',
@@ -360,9 +378,7 @@ def make_subcategory_inventory_graph(category_inventory_graph_hover,category_nam
     chosenFigure = 1   # Initialize figure to show as new orders by category
     chosen = [point['curveNumber'] for point in category_inventory_graph_hover['points']]
     chosenFigure = chosen[0]
-    print("Selected line")
     chosenName = CATEGORY_NAME[category_name_dropdown[chosenFigure]]
-    print(chosenName)
 
     subcategory_inventory_df = pd.read_csv("../data/sub_category_inventory.csv")
     subcategory_inventory_df = subcategory_inventory_df[subcategory_inventory_df["Category"]==chosenName].iloc[:,1:]
@@ -372,7 +388,7 @@ def make_subcategory_inventory_graph(category_inventory_graph_hover,category_nam
     # Plot user to data1
     data=[]
     names = list(subcategory_inventory_df['subcategory'])
-    for idx in range(subcategory_inventory_df.shape[0]):
+    for idx in range(min(subcategory_inventory_df.shape[0],3)):
         data.append(dict(
             type='scatter',
             mode='lines+markers',
@@ -399,7 +415,7 @@ def make_subcategory_inventory_graph(category_inventory_graph_hover,category_nam
 
 
 @app.callback(Output('summary_graph', 'figure'),
-              [Input('userId', 'value')],
+              [Input('category_name_dropdown', 'value')],
               [State('summary_graph', 'relayoutData')])  # No input this time. [Input('main_graph', 'hoverData')]
 def make_summary_figure(userId,summary_graph_layout):
     data=[]
@@ -534,7 +550,7 @@ def make_byCategory_graph(summary_graph_hover):
 
 
 @app.callback(Output('user_seller_graph', 'figure'),
-              [Input('userId', 'value')])   # No input this time. [Input('main_graph', 'hoverData')]
+              [Input('category_name_dropdown', 'value')])   # No input this time. [Input('main_graph', 'hoverData')]
 def make_user_seller_graph(summary_graph_hover):
 
     data=[]
