@@ -3,22 +3,20 @@
 import os
 import copy
 import datetime as dt
+import base64
 # import flask
 
 import pandas as pd
 from flask_cors import CORS
-from flask import send_from_directory, Flask
 import dash
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
-import dashInterface
-from controls import CATEGORY_NAME, CATEGORY_COLORS
 import dash_table_experiments as dte
 
+import dashInterface
+from controls import CATEGORY_NAME, CATEGORY_COLORS
 
-
-# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -32,16 +30,10 @@ server = app.server
 app.title = 'Dashboard Demo'
 CORS(server)
 
-
-@server.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(server.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-# if 'DYNO' in os.environ:
-#     app.scripts.append_script({
-#         'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'  # noqa: E501
-#     })
+if 'DYNO' in os.environ:
+    app.scripts.append_script({
+        'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'  # noqa: E501
+    })
 
 # Create controls
 
@@ -61,7 +53,7 @@ layout = dict(
     autosize=True,
     height=500,
     font=dict(color='#CCCCCC'),
-    titlefont=dict(color='#CCCCCC', size='14'),
+    titlefont=dict(color='#CCCCCC', size='18'),
     margin=dict(
         l=35,
         r=35,
@@ -71,9 +63,11 @@ layout = dict(
     hovermode="closest",
     plot_bgcolor="#191A1A",
     paper_bgcolor="#020202",
-    legend=dict(font=dict(size=10), orientation='h'),
+    legend=dict(font=dict(size=12), orientation='h'),
+    yaxis=dict(title='')
 )
 
+bg_image = base64.b64encode(open('../data/amiibo-covetly.jpg', 'rb').read())
 test=''
 
 def generate_table(dataframe, max_rows=10):
@@ -89,71 +83,148 @@ def generate_table(dataframe, max_rows=10):
 def get_header():
     header=html.Div(
         [
-            html.H1(
-                'Admin Dashboard \n',
-                className='eight columns',
+            html.Div(
+                [
+                    html.H1(
+                        'Buy2Sell',
+                        style={
+                            'textAlign': 'center',
+                            'color': 'white',
+                            'margin-top': '20',
+                        }
+                    ),
+                    html.H3(
+                        'Converting Collectors to Sellers in an Online Collectible Marketplace',
+                        style={
+                            'textAlign': 'center',
+                            'color': 'white'
+                        }
+                    ),
+                    html.P(
+                        'Tianshi Wang\'s Project as a Data Science Fellow at Insight Data Science',
+                        style={
+                            'textAlign': 'center',
+                            'color': 'white',
+                        }
+                    ),
+                    html.Div(
+                        [
+                            html.P("   ", className='three columns',style={'textAlign': 'center','color': 'white'}),
+                            html.A("LinkedIn", href='https://www.linkedin.com/in/tianshi-wang/', target="_blank",
+                                   className='two columns',style={'textAlign': 'center','color': 'white'}),
+                            html.A("GitHub", href='https://github.com/tianshi-wang/Buy2Sell_Insight', target="_blank",
+                                   className='two columns',style={'textAlign': 'center','color': 'white'}),
+                            html.A("Personal Website", href='https://tswang.wixsite.com/home', target="_blank",
+                                   className='two columns',style={'textAlign': 'center','color': 'white'}),
+                            html.P("   ", className='three columns', style={'textAlign': 'center', 'color': 'white'}),
+                        ],
+                        className='row',
+                        style={'marginBottom': 40}
+                    )
+                ],
+                className='twelve columns',
+                style={'backgroundColor':'#1D1E1E'}
             ),
-            html.Img(
-                src="https://www.covetly.com/Content/images/covetly-logo-trans-with-slight-space-top-and-bottom.png",
-                className='one columns',
-                style={
-                    'height': '80',
-                    'width': '225',
-                    'float': 'right',
-                    'position': 'relative',
-                },
-            ),
+
         ],
-        className='row'
     )
     return header
 
 
-def get_menu():
-    menu = html.Div([
-
-        dcc.Link('Demo   ', href='/demo', className="tab first"),
-
-        dcc.Link('About Myself   ', href='/myself', className="tab"),
-
-    ], className="row ")
-    return menu
+# def get_menu():
+#     menu = html.Div([
+#
+#         dcc.Link('Demo   ', href='/demo', className="tab first"),
+#
+#         dcc.Link('About Myself   ', href='/myself', className="tab"),
+#
+#     ], className="row ")
+#     return menu
 
 # In[]:
 # Create app layout
 app.layout = html.Div(
     [   #Top text and logo
         get_header(),
-        html.Br([]),
+        # html.Br([]),
+        # html.Div(html.Img(src='data:image/jpeg;base64,{}'.format(bg_image.decode('ascii')),
+        #                   style={'width': '100%', 'padding': '0', 'margin': '0', 'box-sizing': 'border-box'})),
         # get_menu(),
         html.Div(
             [
-                html.H2(''),
                 html.H2(
-                    'Inventory health report',
-                    className='twelve columns',
-                    style={'textAlign': 'center',}
+                    'By-category Inventory Level',
+                    className='eight columns',
+                    style={'backgroundColor': '#F7F7F8',
+                           'margin-top': '40',
+                           'margin-left':'20'}
+                ),
+                html.Div(
+                    [
+                        html.P(
+                            'Below diagrams shows the inventory level, defined by the number of new wish list over inventory, \
+                            for each category.',
+                        ),
+                        html.P(
+                            'By default, the left plot shows three categories with the lowest inventory levels. The right\
+                             image show the corresponding subcategories for the selected category on the left.',
+                        ),
+                    ],
+                    className='ten columns',
+                    style={'margin-left': '20'}
+                ),
+                html.Img(
+                    src="https://www.covetly.com/Content/images/covetly-logo-trans-with-slight-space-top-and-bottom.png",
+                    className='two columns',
+                    style={
+                        'height': '80',
+                        'width': '220',
+                        'float': 'right',
+                        'position': 'relative',
+                        'overflow': 'auto',
+                        'margin-right':'20',
+                    },
                 ),
             ],
+            className='row',
+            style={'backgroundColor': '#F7F7F8',
+                   'margin-top': '40',
+                   }
         ),
+
         html.Div(
             [
-                html.P('Filter by categories:'),
+                html.P(
+                    'Filter by categories:',
+                    # className='two columns'
+                    className='eight columns',
+                    style={'margin-left': '20'}
+                ),
+            ],
+            className='twelve columns',
+            style={'backgroundColor': '#F7F7F8', },
+        ),
+
+        html.Div(
+            [
+
                 dcc.RadioItems(
                     id='category_name_selector',
                     options=[
                         {'label': 'All   ', 'value': 'all'},
-                        {'label': '  LowInventory(top3)  ', 'value': 'LowInventory(top3)'},
-                        {'label': '  Customize ', 'value': 'custom'}
+                        {'label': 'Low-inventory categories (top3)', 'value':'LowInventory(top3)'},
                     ],
                     value='LowInventory(top3)',
-                    labelStyle={'display': 'inline-block'}
+                    labelStyle={'display':'inline'},
+                    style={'textAlign': 'left',
+                           'marginBottom': 10, 'margin-left': '20'},
                 ),
+
                 dcc.Dropdown(
                     id='category_name_dropdown',
                     options=category_name_options,
                     multi=True,
-                    value=[]
+                    value=[],
                 ),
                 # dcc.Checklist(
                 #     id='lock_selector',
@@ -161,8 +232,10 @@ app.layout = html.Div(
                 #     values=[],
                 # )
             ],
-            className='twelve columns'
+            className='twelve columns',
+            style={'backgroundColor': '#F7F7F8'}
         ),
+
 
 
         # Fig.1 and Fig. 2
@@ -184,35 +257,52 @@ app.layout = html.Div(
                 ),
             ],
         ),
+
         html.Div(
             [
-                html.H2(''),
                 html.H2(
-                    '\nPotential high-impact sellers\n',
-                    style={'text-align': 'center'},
+                    'Suggested Sellers',
                     className='twelve columns',
+                    style={'margin-left':'20'},
                 ),
+                html.P(
+                    'Suggest a list of potential sellers. The score is defined by: score = likelihood*inventory_composition,',
+                    className='twelve columns',
+                    style={'margin-left': '20'},
+                ),
+                html.P(
+                    'where the likelihood is the possibility that the user would sell next month and the inventory_composition\
+                    stands for the percentage of the selected categories in the user\'s whole collection.',
+                    className='twelve columns',
+                    style={'margin-left': '20'},
+                ),
+                html.P(
+                    'In detail, the likelihood is predicted from the similarity of current seller\'s consumption behaviros\
+                    using supervised learning classification (check the slides for more details).',
+                    className='twelve columns',
+                    style={'margin-left': '20'},
+                )
             ],
-            className='row'
+            className='row',
+            style = {'backgroundColor': '#F7F7F8','margin-top': '40'}
         ),
 
 
-
-
-        html.Div([
-            # html.H4('Gapminder DataTable'),
-            dte.DataTable(
-                rows=[{}],
-                row_selectable=True,
-                filterable=True,
-                sortable=True,
-                selected_row_indices=[],
-                id='datatable-gapminder'
-            # optional - sets the order of columns
-                # columns=sorted(DF_GAPMINDER.columns)
-            ),
-            html.Div(id='selected-indexes'),
-        ], className="container"),
+        html.Div(
+            [
+                dte.DataTable(
+                    rows=[{}],
+                    row_selectable=True,
+                    filterable=True,
+                    sortable=True,
+                    selected_row_indices=[],
+                    id='datatable-gapminder'
+                    # columns=sorted(DF_GAPMINDER.columns)
+                ),
+                # html.Div(id='selected-indexes'),
+            ],
+            className="row"
+        ),
 
 
 
@@ -270,13 +360,13 @@ app.layout = html.Div(
                     className='twelve columns',
                     style={'margin-top': '20', 'marginBottom': 40}
                 ),
-            ]),
+            ]
+        ),
     ],
     className='ten columns offset-by-one',
 )
 
 # Describe the layout, or the UI, of the app
-
 
 
 
@@ -292,7 +382,7 @@ def update_table(category_name_dropdown):
     df = pd.read_csv('../data/userTable.csv')
     selectedCategories = [CATEGORY_NAME[idx] for idx in category_name_dropdown]
     selected_weight = list(df[selectedCategories].sum(axis=1))
-    df['score'] = [int(selected_weight[idx] * list(df['likelihood'])[idx] * 100) / 100 for idx in range(df.shape[0])]
+    df['score'] = [int(selected_weight[idx] * list(df['likelihood'])[idx] * 100)/100 for idx in range(df.shape[0])]
     df_to_print = df.iloc[:, :3].join(df.loc[:, selectedCategories]).join(df['score'])
     df_to_print = df_to_print.sort_values(by='score', ascending=False)
     return df_to_print.to_dict('records')
@@ -307,8 +397,7 @@ def display_type(selector):
         return list(CATEGORY_NAME.keys())
     elif selector == 'LowInventory(top3)':
         return ['Funko', 'Amiibo',  'Dorbz']
-    else:
-        return ['Funko', 'Amiibo', 'Dorbz']
+
 
 
 
@@ -324,8 +413,6 @@ def make_category_inventory_figure(category_name_dropdown, category_inventory_gr
     data=[]
     category_inventory_df= pd.read_csv("../data/category_inventory.csv", index_col=0)
     for idx in range(len(category_name_dropdown)):
-        print(CATEGORY_NAME[category_name_dropdown[idx]])
-
         data.append(dict(
             type='scatter',
             mode='lines+markers',
@@ -340,22 +427,11 @@ def make_category_inventory_figure(category_name_dropdown, category_inventory_gr
             ),
             marker=dict(symbol='diamond-open')
         ))
-    # What's the function of selector? "and 'locked' in selector"
-    # print(category_inventory_graph_layout)
-    # if (category_inventory_graph_layout is not None):
-    #     lon = float(category_inventory_graph_layout['mapbox']['center']['lon'])
-    #     lat = float(category_inventory_graph_layout['mapbox']['center']['lat'])
-    #     zoom = float(category_inventory_graph_layout['mapbox']['zoom'])
-    #     layout['mapbox']['center']['lon'] = lon
-    #     layout['mapbox']['center']['lat'] = lat
-    #     layout['mapbox']['zoom'] = zoom
-    # else:
-    lon = -78.05
-    lat = 42.54
-    zoom = 7
 
     layout_individual = copy.deepcopy(layout)
-    layout_individual['title'] = 'Inventory Health Report (wishlist/inventory)'  # noqa: E501
+    print(layout_individual)
+    layout_individual['title'] = 'By-category Inventory Level (wishlist/inventory)'  # noqa: E501
+    layout_individual['yaxis']['title'] = 'wishlist/inventory'
     figure = dict(data=data, layout=layout_individual)
     return figure
 
@@ -374,7 +450,6 @@ def make_subcategory_inventory_graph(category_inventory_graph_hover,category_nam
         category_inventory_graph_hover = {'points': [{'curveNumber': 0,
                                         'pointNumber': 569,
                                         'customdata': 31101173130000}]}
-    print(category_inventory_graph_hover['points'])
     chosenFigure = 1   # Initialize figure to show as new orders by category
     chosen = [point['curveNumber'] for point in category_inventory_graph_hover['points']]
     chosenFigure = chosen[0]
@@ -403,7 +478,6 @@ def make_subcategory_inventory_graph(category_inventory_graph_hover,category_nam
             ),
             marker=dict(symbol='diamond-open')
         ))
-
 
     layout_individual = copy.deepcopy(layout)
     layout_individual['title'] = '%s Sub-category Inventory' %(chosenName.capitalize())  # noqa: E501
@@ -439,18 +513,18 @@ def make_summary_figure(userId,summary_graph_layout):
         ))
 
     # What's the function of selector? "and 'locked' in selector"
-    if (summary_graph_layout is not None and 'locked' in selector):
-
-        lon = float(summary_graph_layout['mapbox']['center']['lon'])
-        lat = float(summary_graph_layout['mapbox']['center']['lat'])
-        zoom = float(summary_graph_layout['mapbox']['zoom'])
-        layout['mapbox']['center']['lon'] = lon
-        layout['mapbox']['center']['lat'] = lat
-        layout['mapbox']['zoom'] = zoom
-    else:
-        lon = -78.05
-        lat = 42.54
-        zoom = 7
+    # if (summary_graph_layout is not None):
+    #
+    #     lon = float(summary_graph_layout['mapbox']['center']['lon'])
+    #     lat = float(summary_graph_layout['mapbox']['center']['lat'])
+    #     zoom = float(summary_graph_layout['mapbox']['zoom'])
+    #     layout['mapbox']['center']['lon'] = lon
+    #     layout['mapbox']['center']['lat'] = lat
+    #     layout['mapbox']['zoom'] = zoom
+    # else:
+    lon = -78.05
+    lat = 42.54
+    zoom = 7
 
     layout_individual = copy.deepcopy(layout)
     layout_individual['title'] = 'Business Overview'  # noqa: E501
@@ -471,7 +545,6 @@ def make_byCategory_graph(summary_graph_hover):
         summary_graph_hover = {'points': [{'curveNumber': 0,
                                         'pointNumber': 569,
                                         'customdata': 31101173130000}]}
-    print(summary_graph_hover['points'])
     chosenFigure = 1   # Initialize figure to show as new orders by category
     chosen = [point['curveNumber'] for point in summary_graph_hover['points']]
     chosenFigure = chosen[0]
@@ -555,7 +628,6 @@ def make_user_seller_graph(summary_graph_hover):
 
     data=[]
     df_user_seller = dashInterface.summary()
-    print(df_user_seller)
     df_user_seller = df_user_seller.iloc[3:5,:]
     names=['New users', 'New sellers']
     colors=['#59C3C3','#fac1b7']
