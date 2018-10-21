@@ -65,10 +65,9 @@ def main():
     writeAWS.tableNameAWS = writeAWS.awsEngine.table_names()
     print(writeAWS.tableNameAWS)
 
-    tableToMove = ['wishlistsgroupbyusersnum',
-                   'wishlistgroupbycategory',
-                   'features',
-                   'featuresrecent3month',
+    tableToMove = ['wishlistgroupbycategory',
+                   'likelihood',
+                   'collectionbyuser',
                    'orders',
                    'ordersgroupbycategory',
                    'ordersgroupbyusersnum',

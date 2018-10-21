@@ -67,15 +67,34 @@ COUNTIES = {
     '123': 'Yates'
  }
 
-CATEGORY_NAME = {'Amiibo': 'amiibo', 'AmiiboCards': 'amiibo-cards', 'Berbrick': 'berbrick', 'Covetly': 'covetly-store', \
-                 'DcC': 'dc-comics', 'DisneyI': 'disney-infinity-figures', 'Dorbz': 'dorbz', 'Funko':'funko', \
-                 'FunkoO': 'funko-other', 'Garbage': 'garbage-pail-kids', 'GiJoe': 'gi-joe', 'Hikari': 'hikari', \
-                 'Kaws': 'kaws', 'KidRobot': 'kid-robot', 'KidRobotB': 'kid-robot-blind-boxes', 'MarvelC': 'marvel-comics',\
-                 'MastersU': 'masters-of-the-universe', 'MightyJ': 'mighty-jaxx', 'MyLittlePony': 'my-little-pony',\
-                 'MysteryM': 'mystery-minis', 'Pokemon': 'pokemon-cards', 'PrintHeroes': 'pint-sized-heroes', \
-                 'RockC': 'rock-candy', 'Sideshow': 'sideshow-collectibles', 'Skylanders': 'skylanders', \
-                 'StarWar': 'star-wars-kenner', 'Superplastic': 'superplastic', 'Tokidoki': 'tokidoki', \
-                 'Transformers': 'transformers', 'Vynl': 'vynl'}
+CATEGORY_NAME = {"funko":"funko",
+    "mystery-minis":"mystery-minis",
+    "dorbz":"dorbz",
+    "amiibo":"amiibo",
+    "rock-candy":"rock-candy",
+    "marvel-legends":"marvel-legends",
+    "vynl":"vynl",
+    "disney-infinity-figures":"disney-infinity-figures",
+    "tokidoki":"tokidoki",
+    "hikari":"hikari",
+    "funko-other":"funko-other",
+    "kid-robot":"kid-robot",
+    "pint-sized-heroes":"pint-sized-heroes",
+    "my-little-pony":"my-little-pony",
+    "kaws":"kaws",
+    "mighty-jaxx":"mighty-jaxx",
+    "skylanders":"skylanders",
+    "berbrick":"berbrick",
+    "kid-robot-blind-boxes":"kid-robot-blind-boxes",
+    "masters-of-the-universe":"masters-of-the-universe",
+    "star-wars-kenner":"star-wars-kenner",
+    "amiibo-cards":"amiibo-cards",
+    "pokemon-cards":"pokemon-cards",
+    "superplastic":"superplastic",
+    "marvel-comics":"marvel-comics",
+    "dc-comics":"dc-comics",
+    "gi-joe":"gi-joe",
+    "covetly-store":"covetly-store"}
 
 
 WELL_TYPES = dict(

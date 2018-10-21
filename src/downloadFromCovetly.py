@@ -6,6 +6,14 @@ import pandas as pd
 import datetime as dt
 import sys
 
+
+# Convert date to month (2017-01 as 01, 2018-01 as 13). Drop the original date column; add the "month" column.
+def date_to_month(df, col='created_date'):
+    df['month'] = df[col].apply(lambda x: (x.year - 2017) * 12 + x.month)  # "added month index 2017-01 as 1"
+    df = df.drop([col], axis=1)
+    return df
+
+
 def createDB():
     # Define a database name (we're using a dataset on births, so we'll call it birth_db)
     # Set your postgres username
@@ -75,29 +83,32 @@ def downloadCollections(domainDB,engine):
 
 def downloadWishList(domainDB,engine):
     db = domainDB.wantlistitems
-    columnName=['created_date','userId','itemId','category']
+    columnName=['created_date','userId','itemId','module','category']
     df_wishlist = pd.DataFrame(columns=columnName)
     idx=0
     for doc in db.find({}, { \
         "CreatedDate": "$CreatedDate",
         "UserId": "UserId",
         "Item._id": "$Item._id",
-        "Item.CategoryName": "$Item.CategoryName",
-            }):
+        "Item.SeoFriendlyModuleName": "$Item.SeoFriendlyModuleName",
+        "Item.SeoFriendlyCategoryName": "$Item.SeoFriendlyCategoryName",
+    }):
         idx+=1
         try:
             newRowDF = pd.DataFrame([[ \
-                doc['CreatedDate'], doc['UserId'],doc['Item']['_id'], doc['Item']['CategoryName'], \
-                ]], columns=columnName\
+                doc['CreatedDate'], doc['UserId'],doc['Item']['_id'], doc['Item']['SeoFriendlyModuleName'], \
+                doc['Item']['SeoFriendlyCategoryName']]], columns=columnName\
                 )
             df_wishlist = df_wishlist.append(newRowDF, ignore_index=True)
-            if idx%10000==0:
+            if idx%1000==0:
                 print(str(idx))
-                df_wishlist.to_sql('wishlist', engine, if_exists='append')
+                df_wishlist = date_to_month(df_wishlist, col='created_date')
+                df_wishlist.to_sql('wantlist', engine, if_exists='append')
                 df_wishlist = pd.DataFrame(columns=columnName)
         except:
             print("Loading data error at line"+str(idx))
-    df_wishlist.to_sql('wishlist', engine, if_exists='append')
+    df_wishlist = date_to_month(df_wishlist, col='created_date')
+    df_wishlist.to_sql('wantlist', engine, if_exists='append')
 
 
 def downloadItems(categoryDB,engine):
@@ -147,6 +158,7 @@ def downloadInventory(categoryDB, engine):
             df = df.append(newRowDF, ignore_index=True)
         except:
             print("Loading data error at line" + str(idx))
+    df = date_to_month(df, col='CreatedDate')
     df.to_sql('inventory', engine, if_exists='replace')
 
 
@@ -217,8 +229,8 @@ def downloadSellers(domainDB,engine):
 def main():
     categoryDB, domainDB = connMongo.conn(sys.argv[1], sys.argv[2]) #pw_for_InvDB, pw_for_DomainDB
     engine = createDB()
-    downloadInventory(domainDB,engine)
-    # downloadWishList(domainDB,engine)
+    # downloadInventory(domainDB,engine)
+    downloadWishList(domainDB,engine)
     # downloadOrder(domainDB,engine)
     # downloadUsers(domainDB, engine)
     # downloadItems(categoryDB, engine)

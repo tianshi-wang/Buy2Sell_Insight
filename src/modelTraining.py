@@ -4,8 +4,11 @@ from imblearn.over_sampling import SMOTE
 import pandas as pd
 import sklearn
 import numpy as np
+from sqlalchemy import create_engine
 from connLocalDB import connDB
+from matplotlib import pyplot as plt
 from sklearn.metrics import fbeta_score, make_scorer
+from sklearn.metrics import roc_curve, auc
 
 
 class Rfc_cv(object):
@@ -18,8 +21,8 @@ class Rfc_cv(object):
     def __init__(self ):
         self.param_grid = {
             'n_estimators': [600],
-            'max_depth':[2, 4, 8],
-            'min_samples_split':[4,8],
+            'max_depth':[4],
+            'min_samples_split':[4],
             'class_weight':[{0:1,1:2},{0:1,1:4}],  # ,{0: 1, 1: 4},  {0:1, 1:10},{0:1,1:20}
             'random_state':[42]
         }
@@ -39,7 +42,7 @@ class Rfc_cv(object):
         print('It will take a few')
         rfc = RandomForestClassifier()
         # Instantiate the grid search model
-        scorer = make_scorer(fbeta_score, beta=1.4)
+        scorer = make_scorer(fbeta_score, beta=1)
         grid_search = GridSearchCV(estimator = rfc, param_grid = self.param_grid,
                                   cv = 8, n_jobs = -1, verbose = 1,scoring=scorer)   # Using k-folds with cv=10
         grid_search.fit(train_features, train_labels)
@@ -50,7 +53,17 @@ class Rfc_cv(object):
 
 
     def evaluate(self, test_features, test_labels):
+        def plot_roc(test_labels, predictions):
+            y_pred_grd = self.best_model.predict_proba(test_features)[:, 1]
+            fpr_rf, tpr_rf, _ = roc_curve(test_labels, y_pred_grd)
+            plt.plot(fpr_rf,tpr_rf)
+            plt.show()
+            print("fpr_rf, tpr_rf")
+            print(fpr_rf)
+            print(tpr_rf)
+
         predictions = self.best_model.predict(test_features)
+        plot_roc(test_labels, predictions)
         recallScore = sklearn.metrics.recall_score(test_labels, predictions)
         f1lScore = sklearn.metrics.f1_score(test_labels, predictions)
         errors = abs(predictions - test_labels)
@@ -72,34 +85,44 @@ class Rfc_cv(object):
         print('Accuracy = {:0.2f}%.'.format(accuracy))
         return accuracy, recallScore, f1lScore
 
-def getData():
+
+
+def get_data():
     """
     Grep data from local SQL database
     :return: DataFrame containing train and test data
     """
-    _, conn = connDB()
-    join_email_query = """
-        SELECT * From features
-        ;
+    engine, _ = connDB()
+    features_query = """
+        SELECT * From features;
     """
-    features = pd.read_sql_query(join_email_query, conn)
+    # Grep and process data
+    features = pd.read_sql_query(features_query, engine, index_col='userId')
+    features = features.drop(columns='index')
     features = features.fillna(value=0)
-    new_features=pd.DataFrame()
-    features['t-3-collectionNum'] = features.iloc[:,1:21].sum(axis=1)
-    features['t-2-collectionNum'] = features.iloc[:,21:41].sum(axis=1)
-    features['t-1-collectionNum'] = features.iloc[:,41:61].sum(axis=1)
-    features = features.iloc[:,61:]
-    selling = features['selling']
-    features['sumFeatures'] = features.iloc[:,:].sum(axis=1)
-    features.drop(labels=['selling'], axis=1, inplace=True)
-    features['selling'] = selling
-    columns = features.columns[:-1]
+    features['sumFeatures'] = features.iloc[:,:-1].sum(axis=1)
 
-    print("Total sellers before removing ebay-migrant is"+ str(features[features['selling']==1].shape[0]))
-    features = features[np.logical_or(features['selling']==0, np.logical_and(features['selling']==1,features['sumFeatures']>3))]
+    # Remove sellers from Ebay (no )
+    print("Total sellers before removing ebay-migrant is "+ str(features[features['selling']==1].shape[0]))
+    features = features[np.logical_or(features['selling']==0, np.logical_and(features['selling']==1,features['sumFeatures']>=3))]
     print("Total sellers after removing ebay-migrant is"+ str(features[features['selling']==1].shape[0]))
     features = features.drop('sumFeatures',axis=1)
-    return features
+
+    features_3month_query = """
+    select * 
+    from featuresrecent3month
+    """
+    features_recent_3month = pd.read_sql_query(features_3month_query, engine, index_col='userId')
+    features_recent_3month = features_recent_3month.drop(columns='index')
+    return features, features_recent_3month
+
+def write_result(result):
+    """
+    Grep data from local SQL database
+    :return: DataFrame containing train and test data
+    """
+    engine, _ = connDB()
+    result.to_sql('likelihood',engine,if_exists='replace')
 
 
 def resampleTraining(X_train, y_train, oversample=False):
@@ -129,33 +152,31 @@ def main():
      4. Train the model
      5. Show test results
      """
-    features = getData()   # Features (not split yet) from SQL
+    # Split training set and test set.
+    # Training set is undersanmpled and oversampled. Check function 'resampleTraining'
+    features,features_recent_3month = get_data()   # Features (not split yet) from SQL
     X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split( \
-        features.iloc[:, :-1], features.iloc[:, -1], test_size=0.30, random_state=32)
-    X_train_resampled, y_train_resampled = resampleTraining(X_train, y_train)
+        features.iloc[:,1:-1], features.iloc[:, -1], test_size=0.30, random_state=32)
     X_train_resampled_oversampled, y_train_resampled_oversampled = resampleTraining(X_train, y_train, oversample=True)
     print("Number of sellers in test set is " + str(sum(y_test)) + " and " + str(sum(y_test == 0)) + " are not.")
 
+    # Train random_forest_classifer by grid_search
     rfc = Rfc_cv()
     print("Training model using undersample + oversample")
     rfc.train_model(X_train_resampled_oversampled, y_train_resampled_oversampled)
     print("Test set result:")
     accu, recallscore, f1Score = rfc.evaluate(X_test, y_test)
-    print(str(accu) + ":" + str(recallscore) + ":" + str(f1Score))
 
+    # After model train and test, predict the probability of selling in next month
+    print(str(accu) + ":" + str(recallscore) + ":" + str(f1Score))
+    y_pred_grd = rfc.best_model.predict_proba(features_recent_3month.iloc[:,1:])
+    features_recent_3month['likelihood']=y_pred_grd[:,1]
     print('Weight for each features:')
     print(str(rfc.best_model.feature_importances_))
-    #
-    # print("Training model using undersample only")
-    # rfc.train_model(X_train_resampled, y_train_resampled)
-    #
-    # print("Test set result:")
-    # accu, recallscore, f1Score = rfc.evaluate(X_test, y_test)
-    # print(str(accu) + ":" + str(recallscore) + ":" + str(f1Score))
-    #
-    # print('Weight for each features:')
-    # print(str(rfc.best_model.feature_importances_))
 
+    # Write result to sql database
+    user_likelihood=pd.DataFrame({'id':features.index, 'likelihood':y_pred_grd})
+    write_result(features_recent_3month['likelihood'])
 
 if __name__ == "__main__":
     main()

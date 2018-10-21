@@ -2,11 +2,13 @@
 Query real-time SQL data, and store dashboard-related data to refresh-updated SQL tables.
 1. writeCollectionGroupbyModule: TABLE collectiongroupbymodule [module, month1, month2, ...]
 """
+from datetime import datetime, timedelta
 
 import pandas as pd
 import numpy as np
+
 from connLocalDB import connDB
-from datetime import datetime, timedelta
+
 
 def groupby_pivot(df,rowIdx, colIdx, val):
     """
@@ -15,6 +17,7 @@ def groupby_pivot(df,rowIdx, colIdx, val):
     John Dec   item1
     John Dec   item2
     Andy Jan   item2
+    =========================
     To a DF like:
     user Jan ... Dec
     john  0  ... 2
@@ -26,6 +29,26 @@ def groupby_pivot(df,rowIdx, colIdx, val):
     df_groupby.reset_index(inplace=True)
     df_groupby_pivoted = df_groupby.pivot(index=rowIdx, columns=colIdx, values=val).fillna(value=0)
     return df_groupby_pivoted
+
+
+def groupby(df,first_col, second_col, val):
+    """
+    Process a dateframe like:
+    user Month Item
+    John Dec   item1
+    John Dec   item2
+    Andy Jan   item2
+    =========================
+    To a DF like:
+    John Dec 2
+    Andy Jan 1
+    ...
+    Params: row index (rowIdx), columns (colIdx), value is count(val) for a given rowIdx and colIdx
+    """
+    df_series = df.groupby([first_col,second_col])[val].count()
+    df_groupby = df_series.to_frame()
+    return df_groupby
+
 
 def handle_date(df, col='created_date'):
     df['month'] = df[col].apply(lambda x: (x.year - 2017) * 12 + x.month)  # "added month index 2017-01 as 1"
@@ -100,44 +123,66 @@ def writeSummary():
 def writeCollectionByUser():
     engine, conn = connDB()
     sql_query = """
-      SELECT collections."userId", collections.module, collections."itemId", items."CategoryName"
+      WITH categorytable AS (
+      SELECT collections."userId", items."ModuleName", COUNT(collections."itemId")
       FROM collections
       JOIN items ON collections."itemId" = items."itemId"
-      WHERE collections.created_date > '%s'::date
-      """ % str(datetime.now().date()-timedelta(days=90))
+      WHERE collections.created_date > '%s'::date-90
+      GROUP BY collections."userId", items."ModuleName")
+      
+      SELECT categorytable.*, sumtable.totalcoll
+      FROM categorytable
+      JOIN (SELECT "userId", SUM(count) AS totalcoll FROM categorytable GROUP BY "userId") AS sumtable
+      ON categorytable."userId"=sumtable."userId"
+      
+      """ % str(datetime.now().date())
     df_users = pd.read_sql_query(sql_query, conn)
+    df_users.to_sql('collectionbyuser', engine, if_exists='replace', index=False)
 
-    user_module = groupby_pivot(df_users, rowIdx='userId', colIdx='module', val='itemId')
-    user_category = groupby_pivot(df_users, rowIdx='userId', colIdx='CategoryName', val='itemId')
-
-    user_module['ratio'] = user_module.max(axis=1)/user_module.sum(axis=1)
-    user_category['ratio'] = user_category.max(axis=1)/user_category.sum(axis=1)
-
-    user_module.to_sql('collectiongroupbyuserandmodule', engine, if_exists='replace', index=False)
-    user_category.to_sql('collectiongroupbyuserandcategory', engine, if_exists='replace', index=False)
 
 def writeInventory():
     sql_query="""
-    SELECT  "itemId", "ModuleName", "CategoryName","CreatedDate"
+    SELECT  "ModuleName", "CategoryName","month", count("itemId")
     FROM inventory
-    WHERE "CreatedDate" >= '2017-09-01'::date
+    WHERE "month" >= 9   
+    GROUP BY "ModuleName", "CategoryName", "month"
+    ORDER BY "ModuleName", "CategoryName", "month" DESC
     """
     engine, conn = connDB()
     df = pd.read_sql_query(sql_query,conn)
     df = handle_date(df, col='CreatedDate')
-    df_module = groupby_pivot(df, rowIdx='ModuleName', colIdx='month', val='itemId')
-    df_module.to_csv('../data/inventory_module.csv')
-    df_module.to_sql('inventorybymodule', engine, if_exists='replace')
+    df.to_sql('inventorybymodule', engine, if_exists='replace')
 
-    df_category = groupby_pivot(df, rowIdx='CategoryName', colIdx='month', val='itemId')
-    getModule_query = """
-    SELECT DISTINCT "ModuleName", "CategoryName"
-    FROM items
+
+def write_wanttoinv():
     """
-    df_module_category = pd.read_sql_query(getModule_query, conn)
-    df_category = df_module_category.set_index('CategoryName').join(df_category)
-    df_category.to_csv('../data/inventory_subcategory.csv')
-    df_category.to_sql('inventorybycategory', engine, if_exists='replace')
+      Write three tables: order_groupby_userId, order_groupby_category
+      (userId and catergary as index, month as columns)
+      """
+    engine, conn = connDB()
+    currMonth = pd.read_sql_query("SELECT MAX(month) FROM inventory", conn).iloc[0,0]
+    def query(month):
+        return """
+          SELECT want.module, inv.numinv, want.numwant, 1.0*inv.numinv/want.numwant AS "{:d}"
+          FROM (SELECT module, count("userId") as numwant
+          FROM wantlist 
+          WHERE month = {:d}-1
+          GROUP BY  module) AS want
+          LEFT JOIN (SELECT "ModuleName", count("itemId") AS numinv FROM inventory 
+          WHERE month>={:d}-3
+          GROUP BY "ModuleName"
+          ) AS inv
+          ON inv."ModuleName"=want.module 
+          ORDER BY numwant DESC
+          ;
+          """.format(month, month, month)
+    df = pd.read_sql_query(query(currMonth), conn)
+    for month in range(currMonth-1, currMonth-7, -1):
+        df_newmonth = pd.read_sql_query(query(month), conn)
+        df.insert(loc=3, column=month ,value=df_newmonth.iloc[:,-1])
+    df.to_sql("inventorylevel", engine, if_exists='replace')
+
+
 
 
 
@@ -148,46 +193,23 @@ def writeWishlistGroupby():
       """
     engine, conn = connDB()
     sql_query = """
-      SELECT "userId", created_date, category, "itemId" FROM wishlist
-      WHERE created_date >= '2017-09-01'::date
+      SELECT want.module, want.numwant, inv.numinv, want.numwant/inv.numinv AS wanttoinv
+      FROM (SELECT  module, count("userId") as numwant
+      FROM wantlist 
+      WHERE month >= (SELECT MAX("month") FROM wantlist AS "maxMonth")-1
+      GROUP BY module) AS want
+      LEFT JOIN (SELECT "ModuleName", count("itemId") AS numinv FROM inventory 
+      WHERE "month">=(SELECT MAX(month) FROM inventory)-3
+      GROUP BY "ModuleName"
+      ) AS inv
+      ON inv."ModuleName"=want.module 
+      ;
       """
     df = pd.read_sql_query(sql_query, conn)
     df['month'] = df['created_date'].apply(lambda x: (x.year - 2017) * 12 + x.month)  # "added month index 2017-01 as 1"
-    df = df.drop(['created_date'], axis=1)
-    df_series = df.groupby(['category', 'month'])['itemId'].count()
-    df_groupbyCategory = df_series.to_frame()
-    df_groupbyCategory.reset_index(inplace=True)
-    df_groupbyCategory = df_groupbyCategory.rename(columns={'itemId': 'numWishlist'})
-    df_groupbyCategory_pivoted = df_groupbyCategory.pivot(index='category', columns='month',
-                                                          values='numWishlist').fillna(value=0)
-    df_groupbyCategory_pivoted['sum'] = df_groupbyCategory_pivoted.sum(axis=1)
-    df_groupbyCategory_pivoted = df_groupbyCategory_pivoted.sort_values(['sum'], ascending=False)
-    df_groupbyCategory_pivoted = df_groupbyCategory_pivoted.drop('sum',axis=1)
+    new_df = df.drop(['created_date'], axis=1)
+    new_df.to_sql('wishlist1', engine, if_exists='replace')
 
-    getModule_query = """
-    SELECT DISTINCT "Category", "ModuleName", "CategoryName"
-    FROM items
-    """
-    df_module = pd.read_sql_query(getModule_query, conn)
-    df_print = df_module.set_index('Category').join(df_groupbyCategory_pivoted)
-    df_print.to_csv('../data/wishilist_category')
-    df_print.to_sql('wishlistgroupbycategory', engine, if_exists='replace')
-
-    months = list(df_print.columns)[2:]
-    df_module = df_print.groupby(['ModuleName'])[months].sum()
-    df_module.to_csv('../data/wishilist_module')
-    df_module.to_sql('wishlistgroupbymodule', engine, if_exists='replace')
-
-
-    df_series = df.groupby(['userId', 'month'])['itemId'].count()
-    df_groupbyUser = df_series.to_frame()
-    df_groupbyUser.reset_index(inplace=True)
-
-    df_groupbyUser = df_groupbyUser.rename(columns={'itemId': 'numWishlist',})
-    df_groupbyUser_num = df_groupbyUser.pivot(index='userId', columns='month', values='numWishlist').fillna(value=0)
-    df_groupbyUser_num.reset_index(inplace=True)
-    df_groupbyUser_num.columns = ['userId']+['{:02d}'.format(int(x))+'-numWishlist' for x in df_groupbyUser_num.columns[1:]]
-    df_groupbyUser_num.to_sql('wishlistsgroupbyusersnum', engine, if_exists='replace')
 
 
 
@@ -269,15 +291,15 @@ def writeCollectionGroupbyUserAndModule():
     """
     df = pd.read_sql_query(sql_query, conn)
 
-    df['month'] = df['created_date'].apply(lambda x: '{:02.0f}'.format((x.year-2017)*12+x.month)+'-') #"added month index 2017-01 as 1"
-    df['monthModule']=df[['month', 'module']].apply(lambda x: ''.join(x), axis=1)
-    df = df.drop(['created_date', 'month'], axis=1)
+    df['month'] = df['created_date'].apply(lambda x: '{:02.0f}'.format((x.year-2017)*12+x.month)+'-collection') #"added month index 2017-01 as 1"
+    # df['monthModule']=df[['month', 'module']].apply(lambda x: ''.join(x), axis=1)
+    df = df.drop(['created_date'], axis=1)
 
-    df_series = df.groupby(['userId', 'monthModule'])['itemId'].count()
+    df_series = df.groupby(['userId', 'month'])['itemId'].count()
     df = df_series.to_frame()
     df.reset_index(inplace=True)
     df = df.rename(columns={'itemId': 'numCollections'})
-    df_pivoted = df.pivot(index='userId',columns='monthModule',values='numCollections').fillna(value=0)
+    df_pivoted = df.pivot(index='userId',columns='month',values='numCollections').fillna(value=0)
     df_pivoted['sum'] = df_pivoted.sum(axis=1)
 
     df_pivoted = df_pivoted.sort_values(['sum'],ascending=False)
@@ -308,31 +330,32 @@ def writeFeatures():
     df_features = pd.read_sql_query(feature_query, conn)
     df_features['month'] = df_features['sellercreateddate'].apply(lambda x: (x.year-2017)*12+x.month).fillna(value=0)
     df_features['month'] = df_features['month'].apply(lambda x: int(x))
-    df_features = df_features.drop(['userId','sellercreateddate'],axis=1)
+    df_features = df_features.drop(['sellercreateddate'],axis=1)
     df_features = df_features.fillna(value=0)
-
-
-    months = list(set([ x[:2] for x in df_features.columns[:-1]]))  # last column is sellerCreationMonth
-    startingMonth= int(df_features.columns[0][0:2])
     endMonth = int(df_features.columns[-2][0:2])
 
-    topCategories_query = """
-    select * from collectiongroupbymodule
-    """
-    categories = list(pd.read_sql_query(topCategories_query, conn)['module'])[:20]
-    allColumns = [str(x)+'-'+str(y) for x in months for y in categories]
-    allColumns.append('selling')
-
-    featuresFillEmptyColumn = pd.DataFrame(columns=allColumns).fillna(value=0)
-    for column in allColumns:
-        try:
-            featuresFillEmptyColumn[column] = df_features[column]
-        except:
-            pass
-    featuresFillEmptyColumn = featuresFillEmptyColumn.fillna(value=0)
-    featureColumns = [x+y for x in ['t-3-','t-2-','t-1-'] for y in categories]+['t-3-numOrders','t-2-numOrders','t-1-numOrders']+ \
+    # topCategories_query = """
+    # select * from collectiongroupbymodule
+    # """
+    # categories = list(pd.read_sql_query(topCategories_query, conn)['module'])[:20]
+    # allColumns = [str(x)+'-'+str(y) for x in months for y in categories]
+    # allColumns.append('selling')
+    #
+    # featuresFillEmptyColumn = pd.DataFrame(columns=allColumns).fillna(value=0)
+    # for column in allColumns:
+    #     try:
+    #         featuresFillEmptyColumn[column] = df_features[column]
+    #     except:
+    #         pass
+    # featuresFillEmptyColumn = featuresFillEmptyColumn.fillna(value=0)
+    featureColumns = ['userId','t-3-collection','t-2-collection','t-1-collection']+['t-3-numOrders','t-2-numOrders','t-1-numOrders']+ \
                      ['t-3-amount', 't-2-amount', 't-1-amount']+['t-3-wishlist', 't-2-wishlist', 't-1-wishlist']
     featureColumns.append('selling')
+
+    # Write the training and test matrix
+    # Format: userID, 3-collections, 3-orders, 3-order-amount, 3-wishlist, and isSeller?
+    # For a seller who started selling in month 20, will consider all months before 20 (including 20).
+    # For a collector who hasn't sold anything. Write features for every month
     features = pd.DataFrame(columns=featureColumns)
     for rowidx in range(df_features.shape[0]):
         sellingMonth = int(df_features.iloc[rowidx, -1])
@@ -340,32 +363,47 @@ def writeFeatures():
         if sellingMonth>15:    # Only consider t>2018/03
             # for idx in range(min(3,t-15)):
             end = t
-            orderColumn = ['{:02d}'.format(x) + '-numOrders' for x in range(end-3,end)]+\
+            orderColumn = ['userId']+['{:02d}'.format(x) + '-collection' for x in range(end-3,end)]+\
+                          ['{:02d}'.format(x) + '-numOrders' for x in range(end-3,end)]+\
                             ['{:02d}'.format(x) + '-amount' for x in range(end-3,end)]+ \
                           ['{:02d}'.format(x) + '-numWishlist' for x in range(end-3,end)]
-            newRowValue = list(featuresFillEmptyColumn.iloc[rowidx, (end - startingMonth - 3) * len(categories): \
-                                                        (end - startingMonth) * len(categories)])+\
-                          list(df_features.iloc[rowidx][orderColumn])
+            newRowValue = [list(df_features.iloc[rowidx][orderColumn])[0]]
+            newRowValue.extend(list(df_features.iloc[rowidx][orderColumn])[4:])
             newRowValue.append(1)
             newRowDF = pd.DataFrame([newRowValue], columns=featureColumns)
             features = features.append(newRowDF,ignore_index=True)
         else:
             t = endMonth
             while t>15:
-                orderColumn = ['{:02d}'.format(x) + '-numOrders' for x in range(t - 3, t)] + \
+                orderColumn = ['userId'] + ['{:02d}'.format(x) + '-collection' for x in range(t-3,t)]+\
+                              ['{:02d}'.format(x) + '-numOrders' for x in range(t - 3, t)] + \
                               ['{:02d}'.format(x) + '-amount' for x in range(t - 3, t)]+\
                                 ['{:02d}'.format(x) + '-numWishlist' for x in range(t - 3, t)]
-                newRowValue = list(featuresFillEmptyColumn.iloc[rowidx, (t - startingMonth - 3) * len(categories): \
-                                                            (t - startingMonth) * len(categories)])+ \
-                              list(df_features.iloc[rowidx, :][orderColumn])
+                newRowValue = [list(df_features.iloc[rowidx,:][orderColumn])[0]]
+                newRowValue.extend(list(df_features.iloc[rowidx][orderColumn])[4:])
                 newRowValue.append(0)
                 newRowDF = pd.DataFrame([newRowValue], columns=featureColumns)
                 features = features.append(newRowDF,ignore_index=True)
                 t -= 1
-        print(rowidx)
-        if rowidx==100:
+        if rowidx%100==0:
             print(rowidx)
     features.to_sql('features', engine, if_exists='replace')
+
+    features_recent_3mon = pd.DataFrame(columns=featureColumns[:-1])
+    for rowidx in range(df_features.shape[0]):
+        #pass the sellers
+        if int(df_features.iloc[rowidx, -1]):
+            continue
+
+        orderColumn = ['userId']+['{:02d}'.format(x) + '-collection' for x in range(endMonth-3,endMonth)]+\
+                      ['{:02d}'.format(x) + '-numOrders' for x in range(endMonth-3,endMonth)]+\
+                        ['{:02d}'.format(x) + '-amount' for x in range(endMonth-3,endMonth)]+ \
+                      ['{:02d}'.format(x) + '-numWishlist' for x in range(endMonth-3,endMonth)]
+        newRowValue = [list(df_features.iloc[rowidx][orderColumn])[0]]
+        newRowValue.extend(list(df_features.iloc[rowidx][orderColumn])[4:])
+        newRowDF = pd.DataFrame([newRowValue], columns=featureColumns[:-1])
+        features_recent_3mon = features_recent_3mon.append(newRowDF,ignore_index=True)
+    features_recent_3mon.to_sql('featuresrecent3month', engine, if_exists='replace')
 
 
 def main():
@@ -376,11 +414,12 @@ def main():
     # writeCollectionGroupbyUserAndModule()
     # writeCollectionByUser()
     # writeSummary()
-    writeInventory()
-    writeWishlistGroupby()
-    # writeFeatures()
+    # writeInventory()
+    # write_wanttoinv()
+    # writeWishlistGroupby()
+    writeCollectionGroupbyUserAndModule()
+    writeFeatures()
     # writeCollectionGroupbyModule()
-    # writeCollectionGroupbyUserAndModule()
 
 
 if __name__ == "__main__":
