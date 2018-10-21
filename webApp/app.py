@@ -36,19 +36,12 @@ if 'DYNO' in os.environ:
     })
 
 # Create controls
-
-df = pd.read_csv('../data/userTable.csv')
-DF_GAPMINDER = df
-DF_GAPMINDER.loc[:20]
-
 category_name_options = [{'label': str(CATEGORY_NAME[category_name]),
                         'value': str(category_name)}
                        for category_name in CATEGORY_NAME]
 
 
-
 # Create global chart template
-
 layout = dict(
     autosize=True,
     height=500,
@@ -67,8 +60,7 @@ layout = dict(
     yaxis=dict(title='')
 )
 
-bg_image = base64.b64encode(open('../data/amiibo-covetly.jpg', 'rb').read())
-test=''
+
 
 def generate_table(dataframe, max_rows=10):
     return html.Table(
