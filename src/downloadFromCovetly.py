@@ -1,22 +1,32 @@
-import connMongo
+"""Download tables from clinet's mongoDB to a standby DB
+
+"""
+import datetime as dt
+import sys
+
 import pymongo
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 import pandas as pd
-import datetime as dt
-import sys
+
+import connMongo
 
 
-# Convert date to month (2017-01 as 01, 2018-01 as 13). Drop the original date column; add the "month" column.
 def date_to_month(df, col='created_date'):
+    """
+    Convert date to month (2017-01 as 01, 2018-01 as 13).
+    Drop the original date column; add the "month" column.
+    """
     df['month'] = df[col].apply(lambda x: (x.year - 2017) * 12 + x.month)  # "added month index 2017-01 as 1"
     df = df.drop([col], axis=1)
     return df
 
 
 def createDB():
-    # Define a database name (we're using a dataset on births, so we'll call it birth_db)
-    # Set your postgres username
+    """
+    Define a database name (we're using a dataset on births, so we'll call it birth_db)
+    Set your postgres username
+    """
     dbname = 'insightProj'
     username = 'Vera'  # change this to your username
     engine = create_engine('postgres://%s@localhost/%s' % (username, dbname))
@@ -32,6 +42,10 @@ def encodeDate(df,created_date):
     return df
 
 def downloadOrder(domainDB,engine):
+    """
+    Download needed order data from mongoDB, and
+    write to local table orders
+    """
     db = domainDB.orders
     df = pd.DataFrame(columns=['order_id','userId', 'created_date','Amount','item_id', 'seller_id'])
     for doc in db.find({}, { \
@@ -51,6 +65,10 @@ def downloadOrder(domainDB,engine):
 
 
 def downloadCollections(domainDB,engine):
+    """
+    Download needed collections data from mongoDB, and
+    write to local table collections
+    """
     db = domainDB.collectionitems
     df_collections = pd.DataFrame(columns=[\
         'created_date','userId','itemId', 'itemName','module',"tags"])
@@ -65,23 +83,31 @@ def downloadCollections(domainDB,engine):
             }).sort([('_id',pymongo.DESCENDING)]):
         idx+=1
         try:
-            newRowDF = pd.DataFrame([[ \
-                doc['CreatedDate'], doc['UserId'],doc['ItemId'],doc['Item']['Name'], doc['Item']['SeoFriendlyModuleName'], \
-                doc['Item']['Tags'] \
-                ]], columns=['created_date','userId','itemId', 'itemName','module',"tags"]\
+            newRowDF = pd.DataFrame([[
+                doc['CreatedDate'], doc['UserId'],doc['ItemId'],
+                doc['Item']['Name'], doc['Item']['SeoFriendlyModuleName'],
+                doc['Item']['Tags']]],
+                columns=['created_date','userId','itemId', 'itemName','module',"tags"]
                 )
             df_collections = df_collections.append(newRowDF, ignore_index=True)
+
+            # Write data every 10000 lines
             if idx%10000==0:
                 print(str(idx))
                 df_collections.to_sql('collections', engine, if_exists='append')
                 df_collections = pd.DataFrame(columns=[ \
                      'created_date', 'userId', 'itemId', 'itemName', 'module', "tags"])
+        # If meeting any kind of error, print out the details.
         except:
             print("Loading data error at line"+str(idx))
     df_collections.to_sql('collections', engine, if_exists='append')
 
 
 def downloadWishList(domainDB,engine):
+    """
+    Download needed wishlist data from mongoDB, and
+    write to local table wishlist
+    """
     db = domainDB.wantlistitems
     columnName=['created_date','userId','itemId','module','category']
     df_wishlist = pd.DataFrame(columns=columnName)
@@ -112,6 +138,10 @@ def downloadWishList(domainDB,engine):
 
 
 def downloadItems(categoryDB,engine):
+    """
+    Download needed items data from mongoDB, and
+    write to local table items
+    """
     db = categoryDB.moduleitems
     df = pd.DataFrame(columns=['itemId','name', "Category" 'ModuleName', 'CategoryName'])
     idx=0
@@ -137,6 +167,10 @@ def downloadItems(categoryDB,engine):
 
 
 def downloadInventory(categoryDB, engine):
+    """
+    Download needed inventory data from mongoDB, and
+    write to local table inventory
+    """
     db = categoryDB.inventoryitems
     df = pd.DataFrame(columns=['itemId', 'ModuleName', 'CategoryName', "CreatedDate"])
     idx = 0
@@ -199,6 +233,10 @@ def downloadUsers(domainDB,engine):
 
 
 def downloadSellers(domainDB,engine):
+    """
+    Download needed seller data from mongoDB, and
+    write to local table seller
+    """
     db = domainDB.sellers
     df_sellers = pd.DataFrame(columns=[\
         'userId','Email', 'CreatedDate', 'Enabled'])
@@ -227,13 +265,16 @@ def downloadSellers(domainDB,engine):
 
 
 def main():
-    categoryDB, domainDB = connMongo.conn(sys.argv[1], sys.argv[2]) #pw_for_InvDB, pw_for_DomainDB
+    # The arguments are #pw_for_InvDB and pw_for_DomainDB, respectively
+    categoryDB, domainDB = connMongo.conn(sys.argv[1], sys.argv[2])
     engine = createDB()
-    # downloadInventory(domainDB,engine)
+
+    # Download selected tables
+    downloadInventory(domainDB,engine)
     downloadWishList(domainDB,engine)
-    # downloadOrder(domainDB,engine)
-    # downloadUsers(domainDB, engine)
-    # downloadItems(categoryDB, engine)
+    downloadOrder(domainDB,engine)
+    downloadUsers(domainDB, engine)
+    downloadItems(categoryDB, engine)
 
 
 if __name__ == "__main__":

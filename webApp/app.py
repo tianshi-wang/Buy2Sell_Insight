@@ -1,12 +1,14 @@
-# In[]:
-# Import required libraries
+""" Main module supporting the webapp (tianshi-wang.com)
+
+The data warehouse is hosted for this webapp
+
+
+"""
+
 import os
 import copy
 import datetime as dt
-import base64
-# import flask
 
-import pandas as pd
 from flask_cors import CORS
 import dash
 from dash.dependencies import Input, Output, State
@@ -18,9 +20,8 @@ import dashInterface
 from controls import CATEGORY_NAME, CATEGORY_COLORS
 
 
-
+# Initialize the dash server and set up the style format
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
 app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
 app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-stylesheets/2d266c578d2a6e8850ebce48fdb52759b2aef506/stylesheet-oil-and-gas.css'})
 server = app.server
@@ -61,7 +62,8 @@ layout = dict(
 )
 
 
-
+# The generate_table model is not in use.
+# Instead, the webapp use the dash_table_experiments for table display
 def generate_table(dataframe, max_rows=10):
     return html.Table(
         # Header
@@ -72,7 +74,13 @@ def generate_table(dataframe, max_rows=10):
         ]) for i in range(min(len(dataframe), max_rows))]
     )
 
+
 def get_header():
+    """
+    Return the header including components:
+    1. Description of the webapp
+    2. Links to Github, Linkedin and personal website
+    """
     header=html.Div(
         [
             html.Div(
@@ -123,13 +131,13 @@ def get_header():
     return header
 
 
+# The layout of the whole webapp
 
-# In[]:
-# Create app layout
 app.layout = html.Div(
     [   #Top text and logo
         get_header(),
-        # html.Br([]),
+        
+        # Description of Figure 1 (by-category inventory level) and Fig.2 (historic inventory)
         html.Div(
             [
                 html.H2(
@@ -171,8 +179,8 @@ app.layout = html.Div(
                    }
         ),
 
-
-        # Fig.1 and Fig. 2
+        # Plot Fig.1 (category_inventory_graph) and Fig. 2 (historic_inventory_graph)
+        # The cursor position on Fig.2 determines the category to plot on Fig.2
         html.Div(
             [
                 html.Div(
@@ -184,7 +192,7 @@ app.layout = html.Div(
                 ),
                 html.Div(
                     [
-                        dcc.Graph(id='subcategory_inventory_graph')
+                        dcc.Graph(id='historic_inventory_graph')
                     ],
                     className='four columns',
                     style={'margin-top': '20', 'marginBottom': 40}
@@ -192,6 +200,7 @@ app.layout = html.Div(
             ],
         ),
 
+        # Description of the table for suggested collectors
         html.Div(
             [
                 html.H2(
@@ -226,6 +235,7 @@ app.layout = html.Div(
             style = {'backgroundColor': '#F7F7F8','margin-top': '40'}
         ),
 
+        # Description of the drop-off (category-selector)
         html.Div(
             [
                 html.P(
@@ -239,6 +249,11 @@ app.layout = html.Div(
             style={'backgroundColor': '#F7F7F8', },
         ),
 
+        # Layout of the category selector (RadioItems and drop-down)
+        # By default, the radio items shows 'Low-inventory categories (top3)'
+        # which is the three categories with lowest inventory levels on Fig.1 (category_inventory_level)
+        # Users can also add or delete the selected categories using drop-sown
+        # The change of the category selector will update the table
         html.Div(
             [
 
@@ -260,16 +275,12 @@ app.layout = html.Div(
                     multi=True,
                     value=[],
                 ),
-                # dcc.Checklist(
-                #     id='lock_selector',
-                #     options=category_name_options,
-                #     values=[],
-                # )
             ],
             className='twelve columns',
             style={'backgroundColor': '#F7F7F8'}
         ),
 
+        # Layout for the DataTable
         html.Div(
             [
                 dte.DataTable(
@@ -279,16 +290,12 @@ app.layout = html.Div(
                     sortable=True,
                     selected_row_indices=[],
                     id='datatable-gapminder'
-                    # columns=sorted(DF_GAPMINDER.columns)
                 ),
-                # html.Div(id='selected-indexes'),
             ],
             className="row"
         ),
 
-
-
-        # Overview Section
+        # Description for the business overview section
         html.Div(
             [
                 html.H2(''),
@@ -301,7 +308,7 @@ app.layout = html.Div(
             className='row'
         ),
 
-    # Fig.1 and Fig. 2
+        # Plot Fig.3 (summary_graph) showing the number of new collections, wishlist and inventory
         html.Div(
             [
                 html.Div(
@@ -311,17 +318,10 @@ app.layout = html.Div(
                     className='twelve columns',
                     style={'margin-top': '20', 'marginBottom': 40}
                 ),
-                # html.Div(
-                #     [
-                #         dcc.Graph(id='byCategory_graph')
-                #     ],
-                # #     className='four columns',
-                # #     style={'margin-top': '20', 'marginBottom': 40}
-                # ),
             ],
         ),
 
-        # Users and Sellers section
+        # Description of the Users and Sellers section
         html.Div(
             [
                 html.H1(''),
@@ -333,6 +333,7 @@ app.layout = html.Div(
             className='row'
         ),
 
+        # Plot of the number of new Users and Sellers
         html.Div(
             [
                 html.Div(
@@ -349,51 +350,25 @@ app.layout = html.Div(
 )
 
 
-
-@app.callback(Output('datatable-gapminder', 'rows'),
-              [Input('category_name_dropdown', 'value')],)
-def update_table(category_name_dropdown):
-    """
-    For user selections, return the relevant table
-    """
-    selectedCategories = [CATEGORY_NAME[idx] for idx in category_name_dropdown]
-    df = dashInterface.userTable(tuple(selectedCategories))
-
-    # selected_weight = list(df[selectedCategories].sum(axis=1))
-    # df['score'] = [int(selected_weight[idx] * list(df['likelihood'])[idx] * 100)/100 for idx in range(df.shape[0])]
-    # df_to_print = df.iloc[:, :3].join(df.loc[:, selectedCategories]).join(df['score'])
-    # df_to_print = df_to_print.sort_values(by='score', ascending=False)
-    return df.to_dict('records')
-
-
-
-
-@app.callback(Output('category_name_dropdown', 'value'),
-              [Input('category_name_selector', 'value')])
-def display_type(selector):
-    if selector == 'all':
-        return list(CATEGORY_NAME.keys())
-    elif selector == 'LowInventory(top3)':
-        return dashInterface.top3lowest()
-
-
-
-
+# Implementation of each components in layout
+# The order of the functions is the same as webapp display
 @app.callback(Output('category_inventory_graph', 'figure'),
-              [Input('category_name_dropdown', 'value')],
-              [State('summary_graph', 'relayoutData')])  # No input this time. [Input('main_graph', 'hoverData')]
-def make_category_inventory_figure(category_name_dropdown, category_inventory_graph_layout):
+              [Input('category_name_dropdown', 'value')]
+              )
+def make_category_inventory_figure(category_name_dropdown):
+    """
+    Plot the by-category inventory level graph
+    :param category_name_dropdown: Selected categores (not necessary)
+    :return: by-category inventory level graph
+    """
     data=[]
     category_inventory_df= dashInterface.inventoryLevel()
     print(category_inventory_df)
-    # for idx in range(len(category_name_dropdown)):
     data.append(dict(
         type='bar',
-        # mode='lines+markers',
         name=category_name_dropdown[0],
         x = category_inventory_df.iloc[:,1],
         y = category_inventory_df.iloc[:,-1]*100,
-        # y=[int(y) for y in list(category_inventory_df.loc[CATEGORY_NAME[category_name_dropdown[idx]]])],
         line=dict(
             shape="spline",
             smoothing=2,
@@ -413,26 +388,27 @@ def make_category_inventory_figure(category_name_dropdown, category_inventory_gr
     return figure
 
 
-
-@app.callback(Output('subcategory_inventory_graph', 'figure'),
-              [Input('category_inventory_graph', 'hoverData'),
-               Input('category_name_dropdown', 'value')])   # No input this time. [Input('main_graph', 'hoverData')]
-def make_subcategory_inventory_graph(category_inventory_graph_hover,category_name_dropdown):
+@app.callback(Output('historic_inventory_graph', 'figure'),
+              [Input('category_inventory_graph', 'hoverData'),])
+def make_historic_inventory_graph(category_inventory_graph_hover):
+    """
+    Plot historic_inventory_graph
+    :param category_inventory_graph_hover: The cursor position on Fig.1 (by-category inventory)
+    :return: historic_inventory_graph
+    """
     if category_inventory_graph_hover is None:
         category_inventory_graph_hover = {'points': [{'x': 'funko'}]}
     print(category_inventory_graph_hover)
     chosen = [point['x'] for point in category_inventory_graph_hover['points']]
     chosenName = chosen[0]
     category_inventory_df= dashInterface.inventoryLevel()
-
-    # chosenName = CATEGORY_NAME[category_name_dropdown[chosenFigure]]
-
     category_inventory_df = category_inventory_df[category_inventory_df["module"]==chosenName].iloc[:,1:]
+
     # Plot collection to data
     print(category_inventory_df)
     colors = ['#F9ADA0', '#849E68', '#59C3C3','#67BD65','#FDBF6F',]
 
-    # Plot user to data1
+    # Append plot-dictionary to data
     data=[]
     data.append(dict(
         type='scatter',
@@ -456,11 +432,41 @@ def make_subcategory_inventory_graph(category_inventory_graph_hover,category_nam
     return figure
 
 
+@app.callback(Output('category_name_dropdown', 'value'),
+              [Input('category_name_selector', 'value')])
+def display_type(selector):
+    """
+    Display the radio-item selector
+    If selector == 'LowInventory(top3)', select three categories with lowest inventory levels
+    Check dashInterface.top3lowest for details
+    """
+    if selector == 'all':
+        return list(CATEGORY_NAME.keys())
+    elif selector == 'LowInventory(top3)':
+        return dashInterface.top3lowest()
+
+
+@app.callback(Output('datatable-gapminder', 'rows'),
+              [Input('category_name_dropdown', 'value')],)
+def update_table(category_name_dropdown):
+    """
+    For user selections, return the relevant table
+    Input: the category_selector (radioitem + dropdown)
+    """
+    selectedCategories = [CATEGORY_NAME[idx] for idx in category_name_dropdown]
+    # Query collector score for selected categories
+    # Check dashInterface.userTable for details
+    df = dashInterface.userTable(tuple(selectedCategories))
+    return df.to_dict('records')
+
 
 @app.callback(Output('summary_graph', 'figure'),
               [Input('category_name_dropdown', 'value')],
               [State('summary_graph', 'relayoutData')])  # No input this time. [Input('main_graph', 'hoverData')]
 def make_summary_figure(userId,summary_graph_layout):
+    """
+    Plot the trend for newly added collections, wishlist, and inventories
+    """
     data=[]
     summary_df = dashInterface.summary()
     names=['New orders', 'New Collections (k)', 'New Wishlist (k)']
@@ -470,6 +476,7 @@ def make_summary_figure(userId,summary_graph_layout):
             type='scatter',
             mode='lines+markers',
             name=names[idx],
+            # Data was stored as 1 for 2017-01. The first column is categories. Plot from the second column
             x=[dt.datetime(year=2017+int(int(x)/12),month=1+int(int(x)%12),day=1) for x in summary_df.columns[1:]],
             y=[int(y) for y in summary_df.iloc[idx,1:]],
             line=dict(
@@ -481,20 +488,6 @@ def make_summary_figure(userId,summary_graph_layout):
             marker=dict(symbol='diamond-open')
         ))
 
-    # What's the function of selector? "and 'locked' in selector"
-    # if (summary_graph_layout is not None):
-    #
-    #     lon = float(summary_graph_layout['mapbox']['center']['lon'])
-    #     lat = float(summary_graph_layout['mapbox']['center']['lat'])
-    #     zoom = float(summary_graph_layout['mapbox']['zoom'])
-    #     layout['mapbox']['center']['lon'] = lon
-    #     layout['mapbox']['center']['lat'] = lat
-    #     layout['mapbox']['zoom'] = zoom
-    # else:
-    lon = -78.05
-    lat = 42.54
-    zoom = 7
-
     layout_individual = copy.deepcopy(layout)
     layout_individual['title'] = 'Business Overview'  # noqa: E501
     figure = dict(data=data, layout=layout_individual)
@@ -502,6 +495,64 @@ def make_summary_figure(userId,summary_graph_layout):
 
 
 
+@app.callback(Output('user_seller_graph', 'figure'),
+              [Input('category_name_dropdown', 'value')])   # No input this time. [Input('main_graph', 'hoverData')]
+def make_user_seller_graph(summary_graph_hover):
+    """
+    Plot the trend of new collectors and new sellers
+    """
+    data=[]
+    df_user_seller = dashInterface.summary()
+    # The 3:5 are rows for new_users and new_sellers
+    df_user_seller = df_user_seller.iloc[3:5,:]
+    names=['New users', 'New sellers']
+    colors=['#59C3C3','#fac1b7']
+
+    data.append(dict(
+        type='scatter',
+        mode='lines+markers',
+        name='New users (*100)',
+        # The data use 2017-01 as 1
+        x=[dt.datetime(year=2017+int(int(x)/12),month=1+int(int(x)%12),day=1) for x in df_user_seller.columns[1:]],
+        y=[int(y*10) for y in df_user_seller.iloc[0,1:]],
+        line=dict(
+            shape="spline",
+            smoothing=2,
+            width=1,
+            color= colors[0]
+        ),
+        marker=dict(symbol='diamond-open')
+    ))
+
+    data.append(dict(
+        type='scatter',
+        mode='lines+markers',
+        name='New sellers',
+        x=[dt.datetime(year=2017+int(int(x)/12),month=1+int(int(x)%12),day=1) for x in df_user_seller.columns[1:]],
+        y=[int(y) for y in df_user_seller.iloc[1,1:]],
+        line=dict(
+            shape="spline",
+            smoothing=2,
+            width=1,
+            color= colors[1]
+        ),
+        marker=dict(symbol='diamond-open')
+    ))
+
+    layout_individual = copy.deepcopy(layout)
+    layout_individual['title'] = 'New users and sellers'  # noqa: E501
+    figure = dict(data=data, layout=layout_individual)
+    return figure
+
+
+if __name__ == '__main__':
+    # Start dash server
+    # app = dash.Dash(__name__)
+    app.server.run(host= '0.0.0.0',debug=True)
+    # End of this module
+
+
+# The following functions not implemented in the current webapp
 # @app.callback(Output('byCategory_graph', 'figure'),
 #               [Input('summary_graph', 'hoverData')])   # No input this time. [Input('main_graph', 'hoverData')]
 # def make_byCategory_graph(summary_graph_hover):
@@ -581,55 +632,3 @@ def make_summary_figure(userId,summary_graph_layout):
 #     layout_individual['title'] = ['New Collections by Category','New Orders by Category', 'New Wishlist by Category'][chosenFigure]  # noqa: E501
 #     figure = dict(data=data[chosenFigure], layout=layout_individual)
 #     return figure
-
-
-@app.callback(Output('user_seller_graph', 'figure'),
-              [Input('category_name_dropdown', 'value')])   # No input this time. [Input('main_graph', 'hoverData')]
-def make_user_seller_graph(summary_graph_hover):
-
-    data=[]
-    df_user_seller = dashInterface.summary()
-    df_user_seller = df_user_seller.iloc[3:5,:]
-    names=['New users', 'New sellers']
-    colors=['#59C3C3','#fac1b7']
-
-    data.append(dict(
-        type='scatter',
-        mode='lines+markers',
-        name='New users (*100)',
-        x=[dt.datetime(year=2017+int(int(x)/12),month=1+int(int(x)%12),day=1) for x in df_user_seller.columns[1:]],
-        y=[int(y*10) for y in df_user_seller.iloc[0,1:]],
-        line=dict(
-            shape="spline",
-            smoothing=2,
-            width=1,
-            color= colors[0]
-        ),
-        marker=dict(symbol='diamond-open')
-    ))
-
-    data.append(dict(
-        type='scatter',
-        mode='lines+markers',
-        name='New sellers',
-        x=[dt.datetime(year=2017+int(int(x)/12),month=1+int(int(x)%12),day=1) for x in df_user_seller.columns[1:]],
-        y=[int(y) for y in df_user_seller.iloc[1,1:]],
-        line=dict(
-            shape="spline",
-            smoothing=2,
-            width=1,
-            color= colors[1]
-        ),
-        marker=dict(symbol='diamond-open')
-    ))
-
-    layout_individual = copy.deepcopy(layout)
-    layout_individual['title'] = 'New users and sellers'  # noqa: E501
-    figure = dict(data=data, layout=layout_individual)
-    return figure
-
-
-# In[]:
-# Main
-if __name__ == '__main__':
-    app.server.run(host= '0.0.0.0',debug=True)

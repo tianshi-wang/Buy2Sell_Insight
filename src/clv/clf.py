@@ -1,15 +1,17 @@
-import os
-import sys
+"""Module for calculate customer lifetime value (CLV)
+This module is still in test
+Currently this module is independent, not implemented in machine learning module or webapp
+"""
+import pickle
+
 import pandas as pd
-from connLocalDB import connDB
 import numpy as np
 import pystan
 import matplotlib.pyplot as plt
-import pickle
-from datetime import datetime
 from scipy.stats import gaussian_kde
 from hashlib import md5
 
+from connLocalDB import connDB
 
 engine, conn = connDB()
 """
@@ -38,13 +40,10 @@ def shift_date(x):
     x['shifted_week'] = x['week'].shift(-1)
     return x
 
-# We'll apply a shift of -1 between the 'date' column and a newly shifted date column shift_date.
-# That way, we'll be able to subtract date from shifted_date at the customer level and compute
-# the inter purchase time (IPT) directly :
+
 transactions_tmp = transactions.sort_values(['week']).\
                         groupby(['userId'], as_index=True).apply(shift_date)
 
-# Let's re-order by customer and date :
 transactions_tmp.sort_values(['userId','week'], ascending=True, inplace=True)
 transactions_tmp.dropna(inplace=True)
 

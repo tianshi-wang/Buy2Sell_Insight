@@ -1,11 +1,20 @@
 """
 Query real-time SQL data, and store dashboard-related data to refresh-updated SQL tables.
-1. writeCollectionGroupbyModule: TABLE collectiongroupbymodule [module, month1, month2, ...]
+Write SQL tables:
+    OrderGroupby
+    CollectionGroupbyUserAndModule
+    CollectionByUser
+    Summary
+    Inventory
+    wanttoinv
+    WishlistGroupby
+    CollectionGroupbyUserAndModule
+    Features
+    CollectionGroupbyModule
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pandas as pd
-import numpy as np
 
 from connLocalDB import connDB
 
@@ -56,71 +65,29 @@ def handle_date(df, col='created_date'):
     return df
 
 def userClean():
+    """
+    Clean user table by converting "createdDate" to "month"
+    """
     engine, conn = connDB()
     sql_query = """
     SELECT * FROM users
     ;
     """
-
     df = pd.read_sql_query(sql_query, conn)
     print(df.head())
     df['month'] = df['CreatedDate'].apply(lambda x: (x.year-2017)*12+x.month)
     df = df.drop(['CreatedDate'], axis=1)
     df.to_sql('users', engine, if_exists='replace')
-    print("UserClean done!")
 
-
-def writeSummary():
-    engine,conn = connDB()
-
-    # write collection summary
-    collections_number_query = """
-    select * from collectiongroupbymodule;
-    """
-    df_collections = pd.read_sql_query(collections_number_query, conn)
-    df_collections = df_collections.sum(axis=0)
-    df_collections = [int(x/1000) for x in list(df_collections)[-13:-1]]
-
-    # write order summary
-    order_number_query = """
-    select * from orders;
-    """
-    df_orders = pd.read_sql_query(order_number_query, conn)
-    df_orders['month'] = df_orders['created_date'].apply(lambda x: (x.year-2017)*12+x.month)
-    df_orders = list(df_orders.groupby(['month'])['userId'].count())[-12:]
-    df_orders = [x for x in list(df_orders)[-13:-1]]
-
-    wishlist_query="""
-    select * from wishlistgroupbycategory;
-    """
-    df_wishlist = pd.read_sql_query(wishlist_query, conn)
-    df_wishlist = df_wishlist.sum(axis=0)
-    df_wishlist = [int(x/1000) for x in list(df_wishlist)[-13:-1]]
-
-    #write user summary
-    user_number_query = """
-    SELECT * FROM users;
-    """
-    df_user = pd.read_sql_query(user_number_query, conn)
-    user_groupby=df_user.groupby(['month'])['userId'].count()
-    df_user = [int(x/1000) for x in list(user_groupby)[-12:]]
-
-    # write seller summary
-    seller_number_query = """
-    SELECT * FROM sellers;
-    """
-    df_seller = pd.read_sql_query(seller_number_query, conn)
-    df_seller['month'] = df_seller['CreatedDate'].apply(lambda x: (x.year-2017)*12+x.month)
-    df_seller = df_seller.groupby(['month'])['userId'].count()
-    monthList = list(df_seller.index)[-12:]
-    df_seller = list(df_seller)[-12:]
-
-    df_summary = pd.DataFrame.from_dict({'NumberOfOrders':df_orders, 'NumberOfCollections':df_collections, \
-                                         'NumberOfWishlist':df_wishlist, 'NumberOfUsers':df_user, \
-                                         'NumberOfSellers':df_seller, }, orient='index',columns=monthList)
-    df_summary.to_sql('summary', engine, if_exists='replace')
 
 def writeCollectionByUser():
+    """
+    The format of output:
+    user   module   count total_collections
+    user1   funko    10     40
+    user1   amiibo   15     40
+    ...
+    """
     engine, conn = connDB()
     sql_query = """
       WITH categorytable AS (
@@ -141,6 +108,12 @@ def writeCollectionByUser():
 
 
 def writeInventory():
+    """
+    Output in the following format:
+    item    module      category    added_month
+    item1   funko       asian       8
+    item2   ...
+    """
     sql_query="""
     SELECT  "ModuleName", "CategoryName","month", count("itemId")
     FROM inventory
@@ -183,9 +156,6 @@ def write_wanttoinv():
     df.to_sql("inventorylevel", engine, if_exists='replace')
 
 
-
-
-
 def writeWishlistGroupby():
     """
       Write three tables: order_groupby_userId, order_groupby_category
@@ -211,8 +181,6 @@ def writeWishlistGroupby():
     new_df.to_sql('wishlist1', engine, if_exists='replace')
 
 
-
-
 def writeOrderGroupby():
     """
     Write three tables: order_groupby_userId, order_groupby_category
@@ -225,6 +193,8 @@ def writeOrderGroupby():
     ON orders.item_id=items."itemId";
     """
     df = pd.read_sql_query(sql_query, conn)
+
+    # Clean, groupy by and pivot the table
     df['month'] = df['created_date'].apply(lambda x: (x.year-2017)*12+x.month) #"added month index 2017-01 as 1"
     df = df.drop(['created_date'], axis=1)
     df_series = df.groupby(['CategoryName','month'])['order_id'].count()
@@ -248,7 +218,6 @@ def writeOrderGroupby():
     df_groupbyUser_amount.columns = ['userId']+['{:02d}'.format(int(x))+'-amount' for x in df_groupbyUser_amount.columns[1:]]
     df_groupbyUser_numOrders.to_sql('ordersgroupbyusersnum', engine, if_exists='replace')
     df_groupbyUser_amount.to_sql('ordersgroupbyusersamount', engine, if_exists='replace')
-
 
 
 def writeCollectionGroupbyModule():
@@ -334,20 +303,6 @@ def writeFeatures():
     df_features = df_features.fillna(value=0)
     endMonth = int(df_features.columns[-2][0:2])
 
-    # topCategories_query = """
-    # select * from collectiongroupbymodule
-    # """
-    # categories = list(pd.read_sql_query(topCategories_query, conn)['module'])[:20]
-    # allColumns = [str(x)+'-'+str(y) for x in months for y in categories]
-    # allColumns.append('selling')
-    #
-    # featuresFillEmptyColumn = pd.DataFrame(columns=allColumns).fillna(value=0)
-    # for column in allColumns:
-    #     try:
-    #         featuresFillEmptyColumn[column] = df_features[column]
-    #     except:
-    #         pass
-    # featuresFillEmptyColumn = featuresFillEmptyColumn.fillna(value=0)
     featureColumns = ['userId','t-3-collection','t-2-collection','t-1-collection']+['t-3-numOrders','t-2-numOrders','t-1-numOrders']+ \
                      ['t-3-amount', 't-2-amount', 't-1-amount']+['t-3-wishlist', 't-2-wishlist', 't-1-wishlist']
     featureColumns.append('selling')
@@ -360,9 +315,13 @@ def writeFeatures():
     for rowidx in range(df_features.shape[0]):
         sellingMonth = int(df_features.iloc[rowidx, -1])
         t = sellingMonth
-        if sellingMonth>15:    # Only consider t>2018/03
+        invalid_selling_month = 15 # Consider only sellers started after 2018/03
+
+        # If a collector is a valid seller, the label should be 1 for the starting to sell month
+        if sellingMonth>invalid_selling_month:
             # for idx in range(min(3,t-15)):
             end = t
+            # Create order columns for each collector
             orderColumn = ['userId']+['{:02d}'.format(x) + '-collection' for x in range(end-3,end)]+\
                           ['{:02d}'.format(x) + '-numOrders' for x in range(end-3,end)]+\
                             ['{:02d}'.format(x) + '-amount' for x in range(end-3,end)]+ \
@@ -372,6 +331,8 @@ def writeFeatures():
             newRowValue.append(1)
             newRowDF = pd.DataFrame([newRowValue], columns=featureColumns)
             features = features.append(newRowDF,ignore_index=True)
+
+        # If the collector is not a seller, labels are 0
         else:
             t = endMonth
             while t>15:
@@ -385,16 +346,15 @@ def writeFeatures():
                 newRowDF = pd.DataFrame([newRowValue], columns=featureColumns)
                 features = features.append(newRowDF,ignore_index=True)
                 t -= 1
-        if rowidx%100==0:
-            print(rowidx)
+
     features.to_sql('features', engine, if_exists='replace')
 
+    # Write a new table featuresrecent3month for prediction
     features_recent_3mon = pd.DataFrame(columns=featureColumns[:-1])
     for rowidx in range(df_features.shape[0]):
         #pass the sellers
         if int(df_features.iloc[rowidx, -1]):
             continue
-
         orderColumn = ['userId']+['{:02d}'.format(x) + '-collection' for x in range(endMonth-3,endMonth)]+\
                       ['{:02d}'.format(x) + '-numOrders' for x in range(endMonth-3,endMonth)]+\
                         ['{:02d}'.format(x) + '-amount' for x in range(endMonth-3,endMonth)]+ \
@@ -406,20 +366,80 @@ def writeFeatures():
     features_recent_3mon.to_sql('featuresrecent3month', engine, if_exists='replace')
 
 
+def writeSummary():
+    """
+    Aggregate data from three tables: collectiongroupbymodule, orders, and wishlist
+    The output table:
+                    09  10  11 ...
+    neworders
+    newcollections
+    newwishlist
+    """
+    engine,conn = connDB()
+    # write collection summary
+    collections_number_query = """
+    select * from collectiongroupbymodule;
+    """
+    df_collections = pd.read_sql_query(collections_number_query, conn)
+    df_collections = df_collections.sum(axis=0)
+    df_collections = [int(x/1000) for x in list(df_collections)[-13:-1]]
+
+    # write order summary
+    order_number_query = """
+    select * from orders;
+    """
+    df_orders = pd.read_sql_query(order_number_query, conn)
+    df_orders['month'] = df_orders['created_date'].apply(lambda x: (x.year-2017)*12+x.month)
+    df_orders = list(df_orders.groupby(['month'])['userId'].count())[-12:]
+    df_orders = [x for x in list(df_orders)[-13:-1]]
+
+    wishlist_query="""
+    select * from wishlistgroupbycategory;
+    """
+    df_wishlist = pd.read_sql_query(wishlist_query, conn)
+    df_wishlist = df_wishlist.sum(axis=0)
+    df_wishlist = [int(x/1000) for x in list(df_wishlist)[-13:-1]]
+
+    #write user summary
+    user_number_query = """
+    SELECT * FROM users;
+    """
+    df_user = pd.read_sql_query(user_number_query, conn)
+    user_groupby=df_user.groupby(['month'])['userId'].count()
+    df_user = [int(x/1000) for x in list(user_groupby)[-12:]]
+
+    # write seller summary
+    seller_number_query = """
+    SELECT * FROM sellers;
+    """
+    df_seller = pd.read_sql_query(seller_number_query, conn)
+    df_seller['month'] = df_seller['CreatedDate'].apply(lambda x: (x.year-2017)*12+x.month)
+    df_seller = df_seller.groupby(['month'])['userId'].count()
+    monthList = list(df_seller.index)[-12:]
+    df_seller = list(df_seller)[-12:]
+
+    df_summary = pd.DataFrame.from_dict({'NumberOfOrders':df_orders, 'NumberOfCollections':df_collections, \
+                                         'NumberOfWishlist':df_wishlist, 'NumberOfUsers':df_user, \
+                                         'NumberOfSellers':df_seller, }, orient='index',columns=monthList)
+    df_summary.to_sql('summary', engine, if_exists='replace')
+
+
 def main():
-    # Cache module write SQL tables for updating dashboard and model training.
-    # Cache doesn't return anything; it only writes to SQL
-    # dataIngestion module read the cache SQL and return DF for plot in Dashboard.
-    # writeOrderGroupby()
-    # writeCollectionGroupbyUserAndModule()
-    # writeCollectionByUser()
-    # writeSummary()
-    # writeInventory()
-    # write_wanttoinv()
-    # writeWishlistGroupby()
+    """
+    Cache module write SQL tables for updating dashboard and model training.
+    Cache doesn't return anything; it only writes to SQL
+    dataIngestion module read the cache SQL and return DF for plot in Dashboard.
+    """
+    writeOrderGroupby()
+    writeCollectionGroupbyUserAndModule()
+    writeCollectionByUser()
+    writeSummary()
+    writeInventory()
+    write_wanttoinv()
+    writeWishlistGroupby()
     writeCollectionGroupbyUserAndModule()
     writeFeatures()
-    # writeCollectionGroupbyModule()
+    writeCollectionGroupbyModule()
 
 
 if __name__ == "__main__":
