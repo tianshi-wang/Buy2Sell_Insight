@@ -5,7 +5,8 @@
 1. [Problem](README.md#problem)
 2. [Approach](README.md#approach)
 3. [Technical Architecture](README.md#technical-architecture)
-5. [Code Structure](README.md#code-structure)
+4. [Code Structure](README.md#code-structure)
+5. [Module Description](REAME.md#module-description)
 6. [Contacts](README.md#contacts)
 
 # Problem
@@ -45,13 +46,30 @@ webapp are hosted on AWS EC2.
     │   └── app.py
     │   └── controls.py
     │   └── dashInterface.py
+    │
     ├── data
         └── logo.png
 
+# Module Description
+A brief introduction for the function of key modules. For details, please read the docstrings.</br>
+
+Under src folder:</br>
+- cache.py: Query SQL data and store aggregate data as ~15 tables on local DB.
+- connLocalDB.py: Connect to local DB.
+- connMongo.py: Connect to client's MongoDB.
+- downloadFromCovetly.py: Download needed data from MongoDB to local DB.
+- modelTraining.py: Train classification model and predict the probability to sell for each collector.
+- syncAwsRDS.py: Sync some tables on local DB to AWS RDS for webapp and model training.
+
+Under webapp folder:</br>
+- app.py: Main code for webapp display
+- controls.py: internal dictionaries and lists
+- dashInterface.py: SQL query for webapp
+
 # Contact
-The webapp is on tianshi-wang.com </br>
+The webapp is on www.tianshi-wang.com </br>
 Feel free to contact me if you have any question.
 
 Tianshi Wang </br>
-tianshi_wang@outlook.com
+tianshi_wang@outlook.com </br>
 https://www.linkedin.com/in/tianshi-wang/

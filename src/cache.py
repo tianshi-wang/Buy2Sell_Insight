@@ -1,5 +1,5 @@
 """
-Query real-time SQL data, and store dashboard-related data to refresh-updated SQL tables.
+Query SQL data and store aggregate data on local DB.
 Write SQL tables:
     OrderGroupby
     CollectionGroupbyUserAndModule
