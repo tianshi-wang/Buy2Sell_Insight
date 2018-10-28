@@ -10,12 +10,12 @@
 6. [Contacts](README.md#contacts)
 
 # Problem
-Covetly suffers from the high virance of inventory levels across categories. To add inventory for categories
- in shortage, the client expects this project can suggest a list of collectors who can be prompt to sell. 
- However, simply prompting collectors with related inventory is not good enough. Firstly, the converted sellers 
+Covetly suffers from the high variance of inventory levels across categories. To add inventory for categories
+ in shortage, the client expects this project to suggest a list of collectors who can be prompted to sell. 
+ However, simply prompting collectors with related inventories is not good enough for two reasons. Firstly, the converted sellers 
  should be able to sell actively because the platform actually may lose money if the seller only complete one or two
  orders per year due to management cost. Secondly, the seller's inventory composition should match the company's need
- very well. It is not so good if a seller tries to sell things the platform already has high inventory.
+ very well. It is not so good if a seller tries to sell things the platform already has much inventory.
  
  
 # Approach
@@ -63,7 +63,7 @@ Under src folder:</br>
 
 Under webapp folder:</br>
 - app.py: Main code for webapp display
-- controls.py: internal dictionaries and lists
+- controls.py: Internal dictionaries and lists
 - dashInterface.py: SQL query for webapp
 
 # Contact

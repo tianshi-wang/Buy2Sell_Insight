@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="466bebb9-7d83-4036-8ffc-b11a24511dac" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/cache.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,13 +46,13 @@
         <counts>
           <entry key="Python Console" value="827" />
           <entry key="dummy" value="20" />
-          <entry key="md" value="2972" />
+          <entry key="md" value="3005" />
           <entry key="py" value="15289" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Markdown" value="2972" />
+          <entry key="Markdown" value="3005" />
           <entry key="PLAIN_TEXT" value="20" />
           <entry key="Python" value="16042" />
           <entry key="SQL" value="74" />
@@ -124,8 +123,8 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="516">
-                <caret line="66" column="40" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="40" />
+              <first_editor relative-caret-position="-339">
+                <caret line="17" column="92" selection-start-line="17" selection-start-column="92" selection-end-line="17" selection-end-column="92" />
               </first_editor>
               <second_editor />
             </state>
@@ -254,8 +253,8 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="303" />
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="y" value="23" />
     <option name="width" value="1280" />
     <option name="height" value="777" />
   </component>
@@ -589,8 +588,8 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="516">
-            <caret line="66" column="40" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="40" />
+          <first_editor relative-caret-position="-339">
+            <caret line="17" column="92" selection-start-line="17" selection-start-column="92" selection-end-line="17" selection-end-column="92" />
           </first_editor>
           <second_editor />
         </state>
