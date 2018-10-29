@@ -1,5 +1,5 @@
 # Buy2Sell
-## Converting collectors to buyers for Covetly, an online marketplace
+### Converting collectors to buyers for Covetly, an online marketplace for collectible toys
 
 # Table of content
 1. [Problem](README.md#problem)
