@@ -68,7 +68,7 @@ Under webapp folder:</br>
 
 # Contact
 The webapp is on www.tianshi-wang.com </br>
-Feel free to contact me if you have any question.
+Feel free to contact me if you have any question or comment.
 
 Tianshi Wang </br>
 tianshi_wang@outlook.com </br>
