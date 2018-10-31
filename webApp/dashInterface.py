@@ -15,9 +15,9 @@ def conn_aws_rds():
     """
     dbname = 'birth_db'  # DB name not table
     # Username for test usage only
-    username = 'Vera'
+    username = ''
     # Password for test usage only
-    passwd = '111111aa'
+    passwd = ''
     # AWS RDS for test usage only
     hostAddr = 'insightdb.c4f4cvkgxat9.us-east-2.rds.amazonaws.com:5432'
     awsEngine = create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (username, passwd, hostAddr, dbname))
