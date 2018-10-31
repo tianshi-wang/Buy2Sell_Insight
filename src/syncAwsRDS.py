@@ -11,8 +11,9 @@ import pandas as pd
 def connAWS():
     # Temporary AWS RDS database for test purpose only
     dbname = 'birth_db'
-    username = 'Vera'
-    passwd = '111111aa'
+    # Input username and passwd
+    username = ''  
+    passwd = ''
     hostAddr = 'insightdb.c4f4cvkgxat9.us-east-2.rds.amazonaws.com:5432'
     awsEngine = create_engine('postgresql+psycopg2://%s:%s@%s/%s' % (username, passwd, hostAddr, dbname))
     if not database_exists(awsEngine.url):
